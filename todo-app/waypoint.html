@@ -1,0 +1,834 @@
+<title>Waypoint</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#F3F5F2;
+    --surface:#FFFFFF;
+    --surface-2:#EAEEE8;
+    --border:#D7DED4;
+    --ink:#1B2420;
+    --ink-dim:#5B6A5F;
+    --ink-faint:#8B978C;
+    --accent:#2F6F5E;
+    --accent-ink:#FFFFFF;
+    --accent-soft:#DCEAE4;
+    --priority-high:#A83E3E;
+    --priority-high-soft:#F3DEDD;
+    --priority-med:#A9702E;
+    --priority-med-soft:#F1E3D0;
+    --priority-low:#3E6E8C;
+    --priority-low-soft:#DEE7ED;
+    --shadow:0 10px 30px -12px rgba(27,36,32,0.25);
+    --radius:14px;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#121A16;
+      --surface:#182420;
+      --surface-2:#1F2E28;
+      --border:#2C3D35;
+      --ink:#E7EDE8;
+      --ink-dim:#9EB0A4;
+      --ink-faint:#6C7C73;
+      --accent:#6FCBAF;
+      --accent-ink:#0E1712;
+      --accent-soft:#233A32;
+      --priority-high:#E39494;
+      --priority-high-soft:#3A2323;
+      --priority-med:#E3B37B;
+      --priority-med-soft:#3A2E1B;
+      --priority-low:#8FC0DE;
+      --priority-low-soft:#20313C;
+      --shadow:0 10px 30px -12px rgba(0,0,0,0.5);
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#121A16;
+    --surface:#182420;
+    --surface-2:#1F2E28;
+    --border:#2C3D35;
+    --ink:#E7EDE8;
+    --ink-dim:#9EB0A4;
+    --ink-faint:#6C7C73;
+    --accent:#6FCBAF;
+    --accent-ink:#0E1712;
+    --accent-soft:#233A32;
+    --priority-high:#E39494;
+    --priority-high-soft:#3A2323;
+    --priority-med:#E3B37B;
+    --priority-med-soft:#3A2E1B;
+    --priority-low:#8FC0DE;
+    --priority-low-soft:#20313C;
+    --shadow:0 10px 30px -12px rgba(0,0,0,0.5);
+    color-scheme:dark;
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    padding:24px 16px 100px;
+  }
+  h1,h2{ font-family:"Fraunces", Georgia, serif; text-wrap:balance; margin:0; }
+  .num{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums; }
+  button{ font-family:inherit; }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  .page{ max-width:1040px; margin:0 auto; display:flex; flex-direction:column; gap:22px; }
+
+  /* ---- Header ---- */
+  .hero{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:22px 22px 20px;
+    display:flex; flex-direction:column; gap:16px;
+  }
+  .hero-top{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .hero-top h1{ font-size:1.7rem; font-weight:600; letter-spacing:-0.01em; }
+  .sync-badge{
+    font-size:0.72rem; color:var(--priority-med); background:var(--priority-med-soft);
+    border-radius:999px; padding:4px 10px; font-weight:500;
+  }
+  .progress-block{ display:flex; flex-direction:column; gap:8px; }
+  .progress-track{
+    position:relative; height:14px; border-radius:999px;
+    background:var(--surface-2);
+    background-image:repeating-linear-gradient(to right, var(--border) 0 1px, transparent 1px 12.5%);
+    overflow:hidden;
+    border:1px solid var(--border);
+  }
+  .progress-fill{
+    position:absolute; inset:0; width:0%;
+    background:var(--accent);
+    border-radius:999px;
+    transition:width .4s ease;
+  }
+  .progress-stats{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+  .progress-pct{ font-size:1.05rem; font-weight:600; }
+  .progress-count{ font-size:0.85rem; color:var(--ink-dim); }
+
+  .momentum-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .chip{
+    display:flex; align-items:baseline; gap:6px;
+    background:var(--surface-2); border:1px solid var(--border);
+    border-radius:10px; padding:8px 12px; flex:1 1 120px;
+  }
+  .chip-label{ font-size:0.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); }
+  .chip-value{ font-size:1.05rem; font-weight:600; margin-left:auto; }
+
+  /* ---- Dashboard grid ---- */
+  .dashboard{ display:grid; grid-template-columns:1fr 300px; gap:20px; align-items:start; }
+  @media (max-width:760px){ .dashboard{ grid-template-columns:1fr; } }
+
+  .main-col{ display:flex; flex-direction:column; gap:14px; min-width:0; }
+
+  .tabs{
+    display:flex; gap:8px; overflow-x:auto; padding-bottom:2px;
+  }
+  .tab-btn{
+    flex:none;
+    display:flex; align-items:baseline; gap:6px;
+    background:var(--surface); border:1px solid var(--border);
+    color:var(--ink-dim); border-radius:999px; padding:8px 14px;
+    font-size:0.86rem; font-weight:500; cursor:pointer;
+    white-space:nowrap;
+  }
+  .tab-btn .num{ font-size:0.78rem; }
+  .tab-btn[aria-selected="true"]{
+    background:var(--accent); border-color:var(--accent); color:var(--accent-ink);
+  }
+  .tab-btn[aria-selected="true"] .num{ color:var(--accent-ink); opacity:.85; }
+
+  .add-form{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:12px; display:flex; flex-direction:column; gap:8px;
+  }
+  .add-form input[type="text"]{
+    border:1px solid var(--border); background:var(--bg); color:var(--ink);
+    border-radius:8px; padding:9px 11px; font-size:0.92rem; width:100%;
+  }
+  .add-form-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .add-form select, .add-form input[type="date"]{
+    border:1px solid var(--border); background:var(--bg); color:var(--ink);
+    border-radius:8px; padding:7px 9px; font-size:0.82rem; flex:1 1 auto;
+  }
+  .add-form button{
+    background:var(--accent); color:var(--accent-ink); border:none; border-radius:8px;
+    padding:8px 16px; font-size:0.85rem; font-weight:600; cursor:pointer; flex:0 0 auto;
+  }
+
+  .task-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+  .task-divider{ font-size:0.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); padding:6px 4px 0; }
+  .task-item{
+    background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    padding:11px 12px; display:flex; gap:10px; align-items:flex-start;
+  }
+  .task-item.is-done{ opacity:.65; }
+  .task-check{
+    flex:none; width:22px; height:22px; margin-top:1px; border-radius:50%;
+    border:2px solid var(--ink-faint); background:transparent; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; padding:0;
+    color:var(--accent-ink); font-size:0.72rem; line-height:1;
+  }
+  .task-check.checked{ border-color:var(--accent); background:var(--accent); }
+  .task-main{ flex:1; min-width:0; display:flex; flex-direction:column; gap:6px; }
+  .task-title-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .task-title{ font-size:0.95rem; font-weight:500; overflow-wrap:anywhere; }
+  .is-done .task-title{ text-decoration:line-through; color:var(--ink-dim); }
+  .tag{
+    font-size:0.68rem; font-weight:500; text-transform:uppercase; letter-spacing:.04em;
+    color:var(--ink-dim); background:var(--surface-2); border:1px solid var(--border);
+    border-radius:999px; padding:2px 8px;
+  }
+  .pill{ font-size:0.68rem; font-weight:600; border-radius:999px; padding:2px 8px; }
+  .pill-high{ color:var(--priority-high); background:var(--priority-high-soft); }
+  .pill-med{ color:var(--priority-med); background:var(--priority-med-soft); }
+  .pill-low{ color:var(--priority-low); background:var(--priority-low-soft); }
+  .due{ font-size:0.75rem; color:var(--ink-dim); }
+  .due.overdue{ color:var(--priority-high); font-weight:600; }
+  .task-notes-preview{ font-size:0.82rem; color:var(--ink-dim); overflow-wrap:anywhere; }
+  .task-expand{
+    flex:none; background:none; border:none; color:var(--ink-faint); cursor:pointer;
+    font-size:1rem; padding:2px 4px; border-radius:6px;
+  }
+  .task-expand:hover{ color:var(--ink); background:var(--surface-2); }
+
+  .task-edit{
+    margin-top:6px; padding-top:10px; border-top:1px dashed var(--border);
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .task-edit-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .task-edit select, .task-edit input[type="date"]{
+    border:1px solid var(--border); background:var(--bg); color:var(--ink);
+    border-radius:8px; padding:6px 8px; font-size:0.8rem; flex:1 1 auto;
+  }
+  .task-edit textarea{
+    border:1px solid var(--border); background:var(--bg); color:var(--ink);
+    border-radius:8px; padding:8px; font-size:0.85rem; width:100%; min-height:56px; resize:vertical;
+    font-family:inherit;
+  }
+  .task-edit-actions{ display:flex; gap:8px; justify-content:flex-end; }
+  .task-edit-actions button{
+    border-radius:8px; padding:6px 12px; font-size:0.8rem; font-weight:600; cursor:pointer; border:1px solid var(--border);
+  }
+  .btn-save{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  .btn-delete{ background:transparent; color:var(--priority-high); }
+
+  .empty-state{ color:var(--ink-faint); font-size:0.86rem; padding:14px 4px; }
+
+  .side-col{ display:flex; flex-direction:column; gap:14px; }
+  .feed{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:16px; display:flex; flex-direction:column; gap:10px;
+  }
+  .feed h2{ font-size:1rem; font-weight:600; }
+  .feed-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .feed-item{ display:flex; flex-direction:column; gap:2px; border-left:2px solid var(--accent); padding-left:10px; }
+  .feed-title{ font-size:0.85rem; font-weight:500; overflow-wrap:anywhere; }
+  .feed-meta{ font-size:0.72rem; color:var(--ink-faint); }
+
+  /* ---- Chat ---- */
+  .chat-toggle{
+    position:fixed; right:18px; bottom:18px; width:52px; height:52px; border-radius:50%;
+    background:var(--accent); color:var(--accent-ink); border:none; box-shadow:var(--shadow);
+    font-size:1.3rem; cursor:pointer; z-index:20;
+  }
+  .chat-panel{
+    position:fixed; right:16px; bottom:80px; width:min(340px, calc(100vw - 32px));
+    max-height:min(480px, calc(100vh - 120px));
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    box-shadow:var(--shadow); display:flex; flex-direction:column; z-index:20; overflow:hidden;
+  }
+  .chat-header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 14px; border-bottom:1px solid var(--border); font-weight:600; font-size:0.9rem;
+  }
+  .chat-header button{ background:none; border:none; color:var(--ink-dim); font-size:1rem; cursor:pointer; }
+  .chat-log{ flex:1; overflow-y:auto; padding:12px 14px; display:flex; flex-direction:column; gap:10px; }
+  .chat-msg{ font-size:0.85rem; line-height:1.4; max-width:88%; padding:8px 11px; border-radius:10px; overflow-wrap:anywhere; }
+  .chat-msg.user{ align-self:flex-end; background:var(--accent-soft); color:var(--ink); border-bottom-right-radius:2px; }
+  .chat-msg.assistant{ align-self:flex-start; background:var(--surface-2); border-bottom-left-radius:2px; }
+  .chat-msg.system{ align-self:center; color:var(--ink-faint); font-size:0.76rem; }
+  .chat-hint{ font-size:0.78rem; color:var(--ink-faint); padding:0 14px 8px; }
+  .chat-form{ display:flex; gap:8px; padding:10px 12px; border-top:1px solid var(--border); }
+  .chat-form input{
+    flex:1; border:1px solid var(--border); background:var(--bg); color:var(--ink);
+    border-radius:8px; padding:8px 10px; font-size:0.85rem; min-width:0;
+  }
+  .chat-form button{
+    background:var(--accent); color:var(--accent-ink); border:none; border-radius:8px;
+    padding:8px 14px; font-size:0.82rem; font-weight:600; cursor:pointer; flex:none;
+  }
+  .chat-form button:disabled{ opacity:.6; cursor:default; }
+</style>
+
+<div class="page">
+  <header class="hero">
+    <div class="hero-top">
+      <h1>Waypoint</h1>
+      <span class="sync-badge" id="syncBadge" hidden>Not saving in this view</span>
+    </div>
+    <div class="progress-block">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-stats">
+        <span class="progress-pct num" id="progressPct">0%</span>
+        <span class="progress-count num" id="progressCount">0 of 0 done</span>
+      </div>
+    </div>
+    <div class="momentum-row">
+      <div class="chip"><span class="chip-label">Today</span><span class="chip-value num" id="statToday">0</span></div>
+      <div class="chip"><span class="chip-label">This week</span><span class="chip-value num" id="statWeek">0</span></div>
+      <div class="chip"><span class="chip-label">Streak</span><span class="chip-value num" id="statStreak">0d</span></div>
+    </div>
+  </header>
+
+  <div class="dashboard">
+    <main class="main-col">
+      <nav class="tabs" id="tabs" role="tablist" aria-label="Task categories"></nav>
+
+      <form class="add-form" id="addForm">
+        <input type="text" id="newTitle" placeholder="Add a task…" required maxlength="140" aria-label="New task title" />
+        <div class="add-form-row">
+          <select id="newTab" aria-label="Category"></select>
+          <select id="newPriority" aria-label="Priority">
+            <option value="low">Low</option>
+            <option value="med" selected>Med</option>
+            <option value="high">High</option>
+          </select>
+          <input type="date" id="newDue" aria-label="Due date" />
+          <button type="submit">Add</button>
+        </div>
+      </form>
+
+      <ul class="task-list" id="taskList"></ul>
+      <p class="empty-state" id="emptyState" hidden>Nothing here yet — add your first task above.</p>
+    </main>
+
+    <aside class="side-col">
+      <section class="feed">
+        <h2>Recently completed</h2>
+        <ul id="feedList" class="feed-list"></ul>
+        <p class="empty-state" id="feedEmpty" hidden>Complete a task and it'll show up here.</p>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<button id="chatToggle" class="chat-toggle" hidden aria-label="Ask Claude to update your list">💬</button>
+<div id="chatPanel" class="chat-panel" hidden>
+  <div class="chat-header">
+    <span>Ask Claude</span>
+    <button id="chatClose" aria-label="Close chat">✕</button>
+  </div>
+  <div class="chat-log" id="chatLog"></div>
+  <p class="chat-hint">Try: "mark dentist done" or "add call mom to personal, due Friday"</p>
+  <form class="chat-form" id="chatForm">
+    <input type="text" id="chatInput" placeholder="Tell it what to change…" maxlength="500" autocomplete="off" aria-label="Message" />
+    <button type="submit" id="chatSend">Send</button>
+  </form>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var TASK_TABS = ["work","personal","health","admin"];
+  var TAB_LABELS = { work:"Work", personal:"Personal", health:"Health", admin:"Admin" };
+  var PRIORITY_LABEL = { low:"Low", med:"Med", high:"High" };
+  var PRIORITY_RANK = { high:0, med:1, low:2 };
+
+  var state = { tasks: [], activeTab: "all", expandedId: null };
+  var db = null;
+  var sample = null;
+  var chatHistory = [];
+  var chatBusy = false;
+  var chatAbort = null;
+
+  try {
+    var savedTab = localStorage.getItem("waypoint.activeTab");
+    if (savedTab && (savedTab === "all" || TASK_TABS.indexOf(savedTab) !== -1)) state.activeTab = savedTab;
+  } catch (e) {}
+
+  function escapeHtml(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+      return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c];
+    });
+  }
+
+  function todayKey(d){
+    d = d || new Date();
+    return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  }
+
+  function fmtDue(iso){
+    if (!iso) return "";
+    var parts = iso.split("-");
+    var d = new Date(Number(parts[0]), Number(parts[1])-1, Number(parts[2]));
+    return d.toLocaleDateString(undefined, { month:"short", day:"numeric" });
+  }
+
+  function relTime(iso){
+    if (!iso) return "";
+    var then = new Date(iso).getTime();
+    var diff = Date.now() - then;
+    var min = Math.floor(diff/60000);
+    if (min < 1) return "just now";
+    if (min < 60) return min + "m ago";
+    var hr = Math.floor(min/60);
+    if (hr < 24) return hr + "h ago";
+    var day = Math.floor(hr/24);
+    return day + "d ago";
+  }
+
+  // ---------- derived data ----------
+
+  function tasksForTab(tab){
+    if (tab === "all") return state.tasks.slice();
+    return state.tasks.filter(function(t){ return t.tab === tab; });
+  }
+
+  function computeMomentum(){
+    var doneTasks = state.tasks.filter(function(t){ return t.done && t.completedAt; });
+    var today = todayKey();
+    var todayCount = 0, weekCount = 0;
+    var weekMs = 7*24*60*60*1000;
+    var now = Date.now();
+    var daySet = {};
+    doneTasks.forEach(function(t){
+      var d = new Date(t.completedAt);
+      var key = todayKey(d);
+      daySet[key] = true;
+      if (key === today) todayCount++;
+      if (now - d.getTime() <= weekMs) weekCount++;
+    });
+    var streak = 0;
+    var cursor = new Date();
+    if (!daySet[todayKey(cursor)]) cursor.setDate(cursor.getDate()-1);
+    while (daySet[todayKey(cursor)]) {
+      streak++;
+      cursor.setDate(cursor.getDate()-1);
+    }
+    return { today: todayCount, week: weekCount, streak: streak };
+  }
+
+  // ---------- rendering ----------
+
+  function renderProgress(){
+    var total = state.tasks.length;
+    var done = state.tasks.filter(function(t){ return t.done; }).length;
+    var pct = total ? Math.round(done/total*100) : 0;
+    document.getElementById("progressFill").style.width = pct + "%";
+    document.getElementById("progressPct").textContent = pct + "%";
+    document.getElementById("progressCount").textContent = done + " of " + total + " done";
+
+    var m = computeMomentum();
+    document.getElementById("statToday").textContent = m.today;
+    document.getElementById("statWeek").textContent = m.week;
+    document.getElementById("statStreak").textContent = m.streak + "d";
+  }
+
+  function renderTabs(){
+    var el = document.getElementById("tabs");
+    var defs = [{id:"all", label:"All"}].concat(TASK_TABS.map(function(id){ return {id:id, label:TAB_LABELS[id]}; }));
+    el.innerHTML = defs.map(function(d){
+      var list = tasksForTab(d.id);
+      var done = list.filter(function(t){ return t.done; }).length;
+      var sel = d.id === state.activeTab;
+      return '<button type="button" class="tab-btn" role="tab" data-tab="' + d.id + '" aria-selected="' + sel + '">' +
+        escapeHtml(d.label) + ' <span class="num">' + done + '/' + list.length + '</span></button>';
+    }).join("");
+  }
+
+  function editFormHtml(t){
+    var tabOpts = TASK_TABS.map(function(tab){
+      return '<option value="' + tab + '"' + (t.tab===tab ? " selected" : "") + '>' + TAB_LABELS[tab] + '</option>';
+    }).join("");
+    var prOpts = ["low","med","high"].map(function(p){
+      return '<option value="' + p + '"' + (t.priority===p ? " selected" : "") + '>' + PRIORITY_LABEL[p] + '</option>';
+    }).join("");
+    return '<div class="task-edit">' +
+      '<div class="task-edit-row">' +
+        '<select data-field="tab">' + tabOpts + '</select>' +
+        '<select data-field="priority">' + prOpts + '</select>' +
+        '<input type="date" data-field="due" value="' + escapeHtml(t.due || "") + '" />' +
+      '</div>' +
+      '<textarea data-field="notes" placeholder="Notes / context…">' + escapeHtml(t.notes || "") + '</textarea>' +
+      '<div class="task-edit-actions">' +
+        '<button type="button" class="btn-delete" data-action="delete">Delete</button>' +
+        '<button type="button" class="btn-save" data-action="save">Save</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function renderList(){
+    var list = tasksForTab(state.activeTab);
+    var open = list.filter(function(t){ return !t.done; }).sort(function(a,b){
+      var pr = PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority];
+      if (pr !== 0) return pr;
+      if (a.due && b.due) return a.due < b.due ? -1 : a.due > b.due ? 1 : 0;
+      if (a.due) return -1;
+      if (b.due) return 1;
+      return 0;
+    });
+    var done = list.filter(function(t){ return t.done; }).sort(function(a,b){
+      return (b.completedAt||"") < (a.completedAt||"") ? -1 : (b.completedAt||"") > (a.completedAt||"") ? 1 : 0;
+    });
+
+    var html = "";
+    function rowHtml(t){
+      var overdue = !t.done && t.due && t.due < todayKey();
+      html += '<li class="task-item' + (t.done ? " is-done" : "") + '" data-id="' + t.id + '">' +
+        '<button type="button" class="task-check' + (t.done ? " checked" : "") + '" data-action="toggle" aria-pressed="' + !!t.done + '" aria-label="' + (t.done ? "Mark not done" : "Mark done") + '">' + (t.done ? "✓" : "") + '</button>' +
+        '<div class="task-main">' +
+          '<div class="task-title-row">' +
+            '<span class="task-title">' + escapeHtml(t.title) + '</span>' +
+            (state.activeTab === "all" ? '<span class="tag">' + TAB_LABELS[t.tab] + '</span>' : '') +
+            '<span class="pill pill-' + t.priority + '">' + PRIORITY_LABEL[t.priority] + '</span>' +
+            (t.due ? '<span class="due' + (overdue ? " overdue" : "") + '">' + (overdue ? "Overdue " : "Due ") + fmtDue(t.due) + '</span>' : '') +
+          '</div>' +
+          (t.notes && state.expandedId !== t.id ? '<div class="task-notes-preview">' + escapeHtml(t.notes) + '</div>' : '') +
+          (state.expandedId === t.id ? editFormHtml(t) : '') +
+        '</div>' +
+        '<button type="button" class="task-expand" data-action="expand" aria-label="Edit task">' + (state.expandedId === t.id ? "▲" : "⋯") + '</button>' +
+      '</li>';
+    }
+    open.forEach(rowHtml);
+    if (open.length && done.length) html += '<li class="task-divider">Completed</li>';
+    done.forEach(rowHtml);
+
+    document.getElementById("taskList").innerHTML = html;
+    document.getElementById("emptyState").hidden = list.length !== 0;
+  }
+
+  function renderFeed(){
+    var completed = state.tasks.filter(function(t){ return t.done && t.completedAt; })
+      .sort(function(a,b){ return b.completedAt < a.completedAt ? -1 : b.completedAt > a.completedAt ? 1 : 0; })
+      .slice(0, 8);
+    var el = document.getElementById("feedList");
+    el.innerHTML = completed.map(function(t){
+      return '<li class="feed-item"><span class="feed-title">' + escapeHtml(t.title) + '</span>' +
+        '<span class="feed-meta">' + TAB_LABELS[t.tab] + ' · ' + relTime(t.completedAt) + '</span></li>';
+    }).join("");
+    document.getElementById("feedEmpty").hidden = completed.length !== 0;
+  }
+
+  function renderAddFormTabOptions(){
+    var sel = document.getElementById("newTab");
+    sel.innerHTML = TASK_TABS.map(function(tab){
+      var chosen = (state.activeTab !== "all" && state.activeTab === tab);
+      return '<option value="' + tab + '"' + (chosen ? " selected" : "") + '>' + TAB_LABELS[tab] + '</option>';
+    }).join("");
+  }
+
+  function renderAll(){
+    renderProgress();
+    renderTabs();
+    renderList();
+    renderFeed();
+    renderAddFormTabOptions();
+  }
+
+  // ---------- data actions ----------
+
+  function addTask(data){
+    if (!db) return;
+    db.collection("tasks").add({
+      title: data.title, tab: data.tab, priority: data.priority,
+      due: data.due || "", notes: "",
+      done: false, createdAt: new Date().toISOString(), completedAt: null
+    });
+  }
+
+  function toggleTask(id){
+    if (!db) return;
+    var t = state.tasks.find(function(x){ return x.id === id; });
+    if (!t) return;
+    db.collection("tasks").doc(id).update({
+      done: !t.done,
+      completedAt: !t.done ? new Date().toISOString() : null
+    });
+  }
+
+  function saveTaskEdit(id, patch){
+    if (!db) return;
+    db.collection("tasks").doc(id).update(patch);
+  }
+
+  function deleteTask(id){
+    if (!db) return;
+    db.collection("tasks").doc(id).delete();
+  }
+
+  // ---------- events ----------
+
+  document.getElementById("tabs").addEventListener("click", function(e){
+    var btn = e.target.closest(".tab-btn");
+    if (!btn) return;
+    state.activeTab = btn.dataset.tab;
+    state.expandedId = null;
+    try { localStorage.setItem("waypoint.activeTab", state.activeTab); } catch (err) {}
+    renderAll();
+  });
+
+  document.getElementById("addForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var title = document.getElementById("newTitle").value.trim();
+    if (!title) return;
+    addTask({
+      title: title,
+      tab: document.getElementById("newTab").value,
+      priority: document.getElementById("newPriority").value,
+      due: document.getElementById("newDue").value
+    });
+    document.getElementById("newTitle").value = "";
+    document.getElementById("newDue").value = "";
+    document.getElementById("newTitle").focus();
+  });
+
+  document.getElementById("taskList").addEventListener("click", function(e){
+    var item = e.target.closest(".task-item");
+    if (!item) return;
+    var id = item.dataset.id;
+    var action = e.target.closest("[data-action]");
+    if (!action) return;
+
+    if (action.dataset.action === "toggle") { toggleTask(id); return; }
+    if (action.dataset.action === "expand") {
+      state.expandedId = state.expandedId === id ? null : id;
+      renderList();
+      return;
+    }
+    if (action.dataset.action === "delete") { deleteTask(id); state.expandedId = null; return; }
+    if (action.dataset.action === "save") {
+      var editEl = item.querySelector(".task-edit");
+      var patch = {
+        tab: editEl.querySelector('[data-field="tab"]').value,
+        priority: editEl.querySelector('[data-field="priority"]').value,
+        due: editEl.querySelector('[data-field="due"]').value,
+        notes: editEl.querySelector('[data-field="notes"]').value.slice(0,500)
+      };
+      saveTaskEdit(id, patch);
+      state.expandedId = null;
+    }
+  });
+
+  // ---------- chat ----------
+
+  function appendChatMsg(role, text){
+    var log = document.getElementById("chatLog");
+    var div = document.createElement("div");
+    div.className = "chat-msg " + role;
+    div.textContent = text;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+    return div;
+  }
+
+  function chatContextTasks(){
+    return state.tasks.slice(0, 80).map(function(t){
+      return t.id + " · " + t.tab + " · [" + (t.done ? "x" : " ") + "] " + t.title.slice(0,60);
+    }).join("\n");
+  }
+
+  function buildInstructions(){
+    return 'You are the assistant embedded in "Waypoint", a personal to-do list app with four ' +
+      'categories: work, personal, health, admin. Use the tools to add, complete, reopen, edit or ' +
+      'delete tasks — never just describe a change without making it. If the request is ambiguous ' +
+      '(which task, which category), make the most reasonable choice from the list below rather than ' +
+      'asking a clarifying question. After acting, reply with one short, friendly sentence confirming ' +
+      'what changed — no bullet lists, no restating the whole task list.\n\n' +
+      "Today's date: " + todayKey() + '\n\n' +
+      'Current tasks (id · category · done · title):\n' + (chatContextTasks() || "(none yet)");
+  }
+
+  var CHAT_TOOLS = [
+    {
+      name: "add_task",
+      description: "Add a new task to the list. Returns the new task's id.",
+      inputSchema: { type:"object", properties:{
+        title:{type:"string"}, tab:{type:"string", enum: TASK_TABS},
+        priority:{type:"string", enum:["low","med","high"]},
+        due:{type:"string", description:"YYYY-MM-DD, or empty for no due date"},
+        notes:{type:"string"}
+      }, required:["title","tab"] },
+      execute: function(input){
+        if (!db) throw new Error("Sync is unavailable in this view.");
+        var title = String(input.title || "").trim().slice(0,140);
+        if (!title) throw new Error("Title is required.");
+        var tab = TASK_TABS.indexOf(input.tab) !== -1 ? input.tab : "personal";
+        var priority = ["low","med","high"].indexOf(input.priority) !== -1 ? input.priority : "med";
+        var due = /^\d{4}-\d{2}-\d{2}$/.test(input.due || "") ? input.due : "";
+        var notes = String(input.notes || "").slice(0,500);
+        return db.collection("tasks").add({
+          title: title, tab: tab, priority: priority, due: due, notes: notes,
+          done: false, createdAt: new Date().toISOString(), completedAt: null
+        }).then(function(ref){ return { id: ref.id, title: title, tab: tab }; });
+      }
+    },
+    {
+      name: "complete_task",
+      description: "Mark a task done, by id (use the ids from the task list above).",
+      inputSchema: { type:"object", properties:{ id:{type:"string"} }, required:["id"] },
+      execute: function(input){
+        if (!db) throw new Error("Sync is unavailable in this view.");
+        var id = String(input.id);
+        return db.collection("tasks").doc(id).update({ done:true, completedAt: new Date().toISOString() })
+          .then(function(){ return { id: id, done: true }; });
+      }
+    },
+    {
+      name: "reopen_task",
+      description: "Mark a completed task as not done again, by id.",
+      inputSchema: { type:"object", properties:{ id:{type:"string"} }, required:["id"] },
+      execute: function(input){
+        if (!db) throw new Error("Sync is unavailable in this view.");
+        var id = String(input.id);
+        return db.collection("tasks").doc(id).update({ done:false, completedAt:null })
+          .then(function(){ return { id: id, done: false }; });
+      }
+    },
+    {
+      name: "update_task",
+      description: "Change a task's title, category, priority, due date or notes, by id. Omit fields that should stay the same.",
+      inputSchema: { type:"object", properties:{
+        id:{type:"string"}, title:{type:"string"}, tab:{type:"string", enum: TASK_TABS},
+        priority:{type:"string", enum:["low","med","high"]}, due:{type:"string"}, notes:{type:"string"}
+      }, required:["id"] },
+      execute: function(input){
+        if (!db) throw new Error("Sync is unavailable in this view.");
+        var id = String(input.id);
+        var patch = {};
+        if (typeof input.title === "string" && input.title.trim()) patch.title = input.title.trim().slice(0,140);
+        if (TASK_TABS.indexOf(input.tab) !== -1) patch.tab = input.tab;
+        if (["low","med","high"].indexOf(input.priority) !== -1) patch.priority = input.priority;
+        if (typeof input.due === "string" && (input.due === "" || /^\d{4}-\d{2}-\d{2}$/.test(input.due))) patch.due = input.due;
+        if (typeof input.notes === "string") patch.notes = input.notes.slice(0,500);
+        if (!Object.keys(patch).length) return { id: id, updated:false };
+        return db.collection("tasks").doc(id).update(patch).then(function(){ return { id:id, updated:true }; });
+      }
+    },
+    {
+      name: "delete_task",
+      description: "Permanently remove a task, by id.",
+      inputSchema: { type:"object", properties:{ id:{type:"string"} }, required:["id"] },
+      execute: function(input){
+        if (!db) throw new Error("Sync is unavailable in this view.");
+        var id = String(input.id);
+        return db.collection("tasks").doc(id).delete().then(function(){ return { id:id, deleted:true }; });
+      }
+    }
+  ];
+
+  function chatErrorCopy(code){
+    switch(code){
+      case "rate_limited": return "That's a lot of requests — give it a moment and try again.";
+      case "not_granted": return "Chat access wasn't allowed for this page.";
+      case "session_expired": return "You'll need to sign in again to keep chatting.";
+      case "refused": return "Claude declined that one — try rephrasing.";
+      case "empty_completion": return "Didn't get a reply — try a shorter or more specific message.";
+      case "prompt_too_large": return "That list has gotten long — try a more specific request.";
+      default: return "Something went wrong — try again in a bit.";
+    }
+  }
+
+  var HIDE_CHAT_CODES = ["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed","tools_unavailable"];
+
+  function setChatToggleVisible(v){
+    document.getElementById("chatToggle").hidden = !v;
+    if (!v) document.getElementById("chatPanel").hidden = true;
+  }
+
+  document.getElementById("chatToggle").addEventListener("click", function(){
+    var panel = document.getElementById("chatPanel");
+    panel.hidden = !panel.hidden;
+    if (!panel.hidden) document.getElementById("chatInput").focus();
+  });
+  document.getElementById("chatClose").addEventListener("click", function(){
+    document.getElementById("chatPanel").hidden = true;
+  });
+
+  document.getElementById("chatForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    if (chatBusy || !sample) return;
+    var input = document.getElementById("chatInput");
+    var msg = input.value.trim();
+    if (!msg) return;
+    input.value = "";
+    appendChatMsg("user", msg);
+
+    var turns = [{ role:"user", content: buildInstructions() }]
+      .concat(chatHistory)
+      .concat([{ role:"user", content: msg }]);
+
+    chatBusy = true;
+    var sendBtn = document.getElementById("chatSend");
+    sendBtn.disabled = true;
+    sendBtn.textContent = "…";
+    var thinkingEl = appendChatMsg("assistant", "Thinking…");
+    chatAbort = new AbortController();
+
+    sample(turns, {
+      modelTier: "default",
+      signal: chatAbort.signal,
+      tools: CHAT_TOOLS,
+      onText: function(u){ thinkingEl.textContent = u.text; }
+    }).then(function(result){
+      chatHistory.push({ role:"user", content: msg }, { role:"assistant", content: result.text });
+      if (chatHistory.length > 16) chatHistory = chatHistory.slice(-16);
+    }).catch(function(err){
+      if (err && err.code === "cancelled") {
+        thinkingEl.textContent = err.text || "Stopped.";
+        return;
+      }
+      thinkingEl.textContent = (err && err.text) ? err.text : chatErrorCopy(err && err.code);
+      if (err && HIDE_CHAT_CODES.indexOf(err.code) !== -1) setChatToggleVisible(false);
+    }).finally(function(){
+      chatBusy = false;
+      sendBtn.disabled = false;
+      sendBtn.textContent = "Send";
+      chatAbort = null;
+    });
+  });
+
+  // ---------- boot ----------
+
+  function useCap(name){
+    try {
+      if (!window.claude || typeof window.claude.use !== "function") return Promise.resolve(null);
+      return window.claude.use(name);
+    } catch (e) { return Promise.resolve(null); }
+  }
+
+  Promise.all([useCap("db"), useCap("sample")]).then(function(results){
+    db = results[0];
+    sample = results[1];
+
+    if (db) {
+      db.collection("tasks").orderBy("createdAt", "asc").onSnapshot(
+        function(snap){
+          state.tasks = snap.docs.map(function(d){ return Object.assign({ id: d.id }, d.data()); });
+          renderAll();
+        },
+        function(err){
+          console.error(err);
+          document.getElementById("syncBadge").hidden = false;
+        }
+      );
+    } else {
+      document.getElementById("syncBadge").hidden = false;
+      renderAll();
+    }
+
+    setChatToggleVisible(!!(db && sample));
+  });
+
+  renderAll();
+})();
+</script>
