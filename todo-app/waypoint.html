@@ -144,7 +144,57 @@
   .lv-when{ font-size:.7rem; color:var(--ink-faint); white-space:nowrap; padding-top:7px; min-width:62px; text-align:right; }
   .lv-when.overdue{ color:var(--warn); font-weight:600; }
 
+  /* Group label on chips + @ suggestions */
+  .grouptag{ display:block; font-size:.68rem; color:var(--ink-faint); margin-top:2px; }
+  .chip.done .grouptag{ text-decoration:none; }
+  .gsuggest{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:0 4px; margin-top:-6px; font-size:.78rem; color:var(--ink-faint); }
+  .gsuggest button{ border:1px solid var(--line); background:var(--surface); border-radius:999px; padding:4px 10px; font-size:.78rem; cursor:pointer; color:var(--ink-dim); }
+  .gsuggest button:hover{ border-color:var(--accent); color:var(--accent); }
+
+  /* Groups view */
+  .groups{ display:grid; grid-template-columns:repeat(auto-fill, minmax(min(330px,100%),1fr)); gap:14px; align-items:start; }
+  .gcard{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px; min-width:0; }
+  .gcard.finished{ opacity:.75; }
+  .gcard-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; }
+  .gcard h3{ margin:0; font-family:"Fraunces", Georgia, serif; font-size:1.2rem; font-weight:500; line-height:1.2; overflow-wrap:anywhere; text-wrap:balance; }
+  .gleft{ flex:none; font-size:.76rem; color:var(--ink-dim); }
+  .grename{ flex:1; min-width:0; font-family:"Fraunces", Georgia, serif; font-size:1.1rem; border:1px solid var(--accent); border-radius:8px; padding:4px 8px; background:var(--bg); }
+  .gpct{ display:flex; align-items:center; gap:10px; }
+  .gpct .bar{ flex:1; height:8px; }
+  .gpct .num{ font-size:.8rem; font-weight:600; white-space:nowrap; }
+  .gmeta{ display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 10px; font-size:.74rem; color:var(--ink-faint); }
+  .steps{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+  .step{ display:flex; align-items:flex-start; gap:8px; padding:6px 6px 6px 4px; border-radius:9px; font-size:.84rem; line-height:1.3; }
+  .step.next{ background:var(--today); }
+  .step-n{ flex:none; width:18px; text-align:right; font-size:.72rem; color:var(--ink-faint); padding-top:1px; }
+  .step .check{ margin-top:1px; }
+  .step.done .check{ background:var(--c); }
+  .step.done .chip-title{ text-decoration:line-through; color:var(--ink-faint); }
+  .nextpill{ display:inline-block; margin-left:6px; font-size:.64rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--accent); vertical-align:1px; }
+  .step-when{ flex:none; font-size:.72rem; color:var(--ink-faint); padding-top:1px; white-space:nowrap; }
+  .step-when.overdue{ color:var(--warn); font-weight:600; }
+  .step-move{ flex:none; display:flex; gap:2px; }
+  .step-move button{ border:none; background:none; width:22px; height:22px; border-radius:6px; color:var(--ink-faint); cursor:pointer; font-size:.8rem; padding:0; }
+  .step-move button:hover:not(:disabled){ background:var(--surface-2); color:var(--ink); }
+  .step-move button:disabled{ opacity:.3; cursor:default; }
+  .gempty{ font-size:.82rem; color:var(--ink-faint); padding:2px 4px; }
+  .gadd{ display:flex; gap:6px; }
+  .gadd input{ flex:1; min-width:0; border:1px solid var(--line); border-radius:8px; padding:7px 9px; font-size:.82rem; background:var(--bg); }
+  .gadd button{ flex:none; border:1px solid var(--line); background:var(--surface); border-radius:8px; padding:6px 12px; font-size:.8rem; font-weight:600; cursor:pointer; color:var(--accent); }
+  .gfoot{ display:flex; justify-content:flex-end; gap:4px; }
+  .gfoot button{ border:none; background:none; font-size:.74rem; color:var(--ink-faint); padding:4px 6px; border-radius:6px; cursor:pointer; }
+  .gfoot button:hover{ color:var(--ink); background:var(--surface-2); }
+  .gfoot button.confirm{ color:var(--warn); font-weight:600; background:var(--warn-soft); }
+  .gnew{ border-style:dashed; border-color:var(--line-strong); background:transparent; }
+  .gnew p{ margin:0; font-size:.82rem; color:var(--ink-dim); line-height:1.45; }
+  .gnew code{ font-family:"IBM Plex Mono", monospace; font-size:.74rem; background:var(--surface-2); padding:1px 5px; border-radius:4px; }
+  .gnew-row{ display:flex; gap:6px; }
+  .gnew-row input{ flex:1; min-width:0; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:.86rem; background:var(--surface); }
+  .gfinished{ margin-top:18px; }
+  .gfinished summary{ cursor:pointer; font-size:.78rem; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-faint); padding:4px 2px 12px; }
+
   /* Sheet */
+  .sheet select{ width:100%; border:1px solid var(--line); border-radius:9px; padding:8px 10px; background:var(--bg); font-size:.86rem; color:var(--ink); }
   .scrim{ position:fixed; inset:0; background:rgba(10,15,12,.35); z-index:30; }
   .sheet{ position:fixed; z-index:31; left:50%; bottom:16px; transform:translateX(-50%); width:min(480px, calc(100vw - 32px)); max-height:calc(100vh - 32px); overflow-y:auto; background:var(--surface); border:1px solid var(--line-strong); border-radius:16px; box-shadow:var(--shadow); padding:16px; display:flex; flex-direction:column; gap:12px; }
   .sheet input[type="text"], .sheet textarea{ width:100%; border:1px solid var(--line); border-radius:9px; padding:9px 11px; background:var(--bg); }
@@ -218,6 +268,7 @@
     <div class="views" role="group" aria-label="View">
       <button type="button" id="viewWeek" aria-pressed="true">Week</button>
       <button type="button" id="viewList" aria-pressed="false">List</button>
+      <button type="button" id="viewGroups" aria-pressed="false">Groups</button>
     </div>
   </div>
 
@@ -243,8 +294,9 @@
   <div class="quick-meta">
     <span>Goes to <span class="preview" id="quickPreview">General · Backlog</span></span>
     <button type="button" class="clear-date" id="quickClearDate" hidden>✕ Clear date</button>
-    <span>Optional: <code>#work</code> <code>fri</code> <code>5 dec</code> <code>next month</code> <code>in 3 weeks</code> <code>!</code> important</span>
+    <span>Optional: <code>#work</code> <code>@group</code> <code>fri</code> <code>5 dec</code> <code>next month</code> <code>in 3 weeks</code> <code>!</code> important</span>
   </div>
+  <div class="gsuggest" id="groupSuggest" hidden></div>
 
   <section id="weekView">
     <div class="grid-wrap"><div class="grid" id="grid"></div></div>
@@ -252,6 +304,9 @@
   </section>
   <section id="listView" hidden>
     <div class="listview" id="listGroups"></div>
+  </section>
+  <section id="groupsView" hidden>
+    <div id="groupsHost"></div>
   </section>
 </div>
 
@@ -262,6 +317,9 @@
   <div class="seg" id="sheetCats"></div>
   <div class="sheet-label">Day</div>
   <div class="seg" id="sheetDays"></div>
+  <div class="sheet-label">Group</div>
+  <select id="sheetGroup" aria-label="Group"></select>
+  <input type="text" id="sheetNewGroup" maxlength="80" placeholder="New group name, then press Enter" aria-label="New group name" hidden>
   <div class="sheet-label">Notes</div>
   <textarea id="sheetNotes" maxlength="500" placeholder="Context, progress, links…" aria-label="Notes"></textarea>
   <div class="sheet-foot">
@@ -296,7 +354,7 @@
     <button id="chatClose" aria-label="Close chat">✕</button>
   </div>
   <div class="chat-log" id="chatLog"></div>
-  <p class="chat-hint">Try: "move dentist to Friday" or "add renew passport to admin on 5 Dec"</p>
+  <p class="chat-hint">Try: "move dentist to Friday" or "plan switching gas provider: switch name, meter change, new tariff, then move provider"</p>
   <form class="chat-form" id="chatForm">
     <input type="text" id="chatInput" placeholder="Tell it what to change…" maxlength="500" autocomplete="off" aria-label="Message">
     <button type="submit" id="chatSend">Send</button>
@@ -345,16 +403,24 @@
   setToday();
 
   // ---------- state ----------
-  var raw = [];          // [{id, data}] straight from the store
+  var raw = [];          // tasks: [{id, data}] straight from the store
+  var rawGroups = [];    // groups: [{id, data}]
   var tasks = [];        // normalized view of raw
+  var groups = [];       // normalized view of rawGroups
+  var GROUP = {};
   var db = null, sample = null, localId = 0;
   var weekStart = THIS_MON;
   var view = "week";
   var openId = null;
   var quickDate = null;
-  try { if (localStorage.getItem("waypoint.view") === "list") view = "list"; } catch (e) {}
+  try { var savedView = localStorage.getItem("waypoint.view"); if (savedView === "list" || savedView === "groups") view = savedView; } catch (e) {}
 
   function normalize(){
+    groups = rawGroups.map(function(r){
+      var x = r.data || {};
+      return { id: r.id, name: String(x.name || "Untitled group"), createdAt: String(x.createdAt || "") };
+    });
+    GROUP = {}; groups.forEach(function(g){ GROUP[g.id] = g; });
     tasks = raw.map(function(r){
       var x = r.data || {};
       var t = {
@@ -365,6 +431,8 @@
         priority: x.priority === "high" ? "high" : "med",
         notes: String(x.notes || ""),
         done: !!x.done,
+        group: x.group && GROUP[x.group] ? x.group : null,
+        step: typeof x.step === "number" ? x.step : null,
         createdAt: String(x.createdAt || ""),
         completedAt: x.completedAt || null
       };
@@ -373,6 +441,40 @@
     });
   }
   function find(id){ return tasks.filter(function(t){ return t.id === id; })[0]; }
+
+  // Steps within a group sort by `step`; a strictly increasing value puts new steps last.
+  var lastStep = 0;
+  function nextStep(){ lastStep = Math.max(lastStep+1, Date.now()); return lastStep; }
+  function stepSort(a,b){
+    var as = a.step === null ? Infinity : a.step, bs = b.step === null ? Infinity : b.step;
+    if (as !== bs) return as < bs ? -1 : 1;
+    return a.createdAt < b.createdAt ? -1 : a.createdAt > b.createdAt ? 1 : 0;
+  }
+
+  // ---------- groups: @name matching ----------
+  function normName(s){ return String(s).toLowerCase().replace(/[-_]+/g," ").replace(/\s+/g," ").trim(); }
+  function groupSlug(name){ return normName(name).replace(/ /g,"-"); }
+  function groupNameFromToken(token){ var t = normName(token); return t.charAt(0).toUpperCase()+t.slice(1); }
+  function byRecent(a,b){ return a.createdAt < b.createdAt ? 1 : -1; }
+  function matchGroup(token){
+    var t = normName(token); if (!t) return null;
+    var hit = groups.filter(function(g){ return normName(g.name) === t; });
+    if (!hit.length) hit = groups.filter(function(g){ return normName(g.name).indexOf(t) === 0; });
+    if (!hit.length) hit = groups.filter(function(g){ return normName(g.name).split(" ").some(function(w){ return w.indexOf(t) === 0; }); });
+    return hit.length ? hit.sort(byRecent)[0] : null;
+  }
+  var pendingGroups = {};
+  function resolveGroup(token, exact){
+    if (!token || !normName(token)) return Promise.resolve(null);
+    var m = exact ? groups.filter(function(g){ return normName(g.name) === normName(token); })[0] : matchGroup(token);
+    if (m) return Promise.resolve(m.id);
+    var name = groupNameFromToken(token), key = normName(name);
+    if (pendingGroups[key]) return pendingGroups[key];
+    var p = write("add", null, { name: name, createdAt: new Date().toISOString() }, false, "groups").then(function(ref){ return ref.id; });
+    pendingGroups[key] = p;
+    p.then(function(){ setTimeout(function(){ delete pendingGroups[key]; }, 8000); }, function(){ delete pendingGroups[key]; });
+    return p;
+  }
 
   // ---------- quick-add parsing ----------
   var DAYWORDS = { mon:0, monday:0, tue:1, tues:1, tuesday:1, wed:2, weds:2, wednesday:2, thu:3, thur:3, thurs:3, thursday:3, fri:4, friday:4, sat:5, saturday:5, sun:6, sunday:6 };
@@ -431,8 +533,9 @@
       var lw = w.toLowerCase();
       if (lw.charAt(0) === "#" && lw.length > 1) {
         var m = CATS.filter(function(c){ return c.id.indexOf(lw.slice(1)) === 0; })[0];
-        if (m) { out.cat = m.id; return; }
+        if (m) { out.cat = m.id; out.catExplicit = true; return; }
       }
+      if (lw.charAt(0) === "@" && lw.replace(/[.,]+$/,"").length > 1) { out.groupToken = w.slice(1).replace(/[.,]+$/,""); return; }
       if (lw === "!" || lw === "!high") { out.priority = "high"; return; }
       keep.push(w);
     });
@@ -450,30 +553,44 @@
     out.title = keep.join(" ");
     return out;
   }
+  // With @group and no #category, a step takes the group's usual category.
+  function inheritGroupCat(p){
+    if (p.catExplicit || !p.groupToken) return p;
+    var m = matchGroup(p.groupToken);
+    if (m) p.cat = groupCat(groupStats(m));
+    return p;
+  }
   function placeLabel(p){
-    return CAT[p.cat].label + " · " + (p.date ? fmtDay(fromIso(p.date)) : "Backlog") + (p.priority === "high" ? " · Important" : "");
+    var g = "";
+    if (p.group && GROUP[p.group]) g = " · @" + GROUP[p.group].name;
+    else if (p.groupToken) { var m = matchGroup(p.groupToken); g = " · @" + (m ? m.name : groupNameFromToken(p.groupToken) + " (new group)"); }
+    return CAT[p.cat].label + " · " + (p.date ? fmtDay(fromIso(p.date)) : "Backlog") + (p.priority === "high" ? " · Important" : "") + g;
   }
 
   // ---------- store ----------
-  function write(op, id, data, quiet){
+  function write(op, id, data, quiet, colName){
+    colName = colName || "tasks";
     if (db) {
-      var col = db.collection("tasks");
+      var col = db.collection(colName);
       var p = op === "add" ? col.add(data) : op === "update" ? col.doc(id).update(data) : col.doc(id).delete();
       return p.catch(function(e){
         if (!quiet) toast(e && e.code === "quota_exceeded" ? "The list is full — delete some old tasks, then try again." : "That didn't save — check your connection and try again.");
         throw e;
       });
     }
-    if (op === "add") { var nid = "local-"+(++localId); raw.push({ id: nid, data: data }); normalize(); render(); return Promise.resolve({ id: nid }); }
-    var r = raw.filter(function(x){ return x.id === id; })[0];
-    if (!r) return Promise.reject({ code:"not_found", message:"No task with that id." });
+    var arr = colName === "groups" ? rawGroups : raw;
+    if (op === "add") { var nid = "local-"+(++localId); arr.push({ id: nid, data: data }); normalize(); render(); return Promise.resolve({ id: nid }); }
+    var r = arr.filter(function(x){ return x.id === id; })[0];
+    if (!r) return Promise.reject({ code:"not_found", message:"Nothing with that id." });
     if (op === "update") r.data = Object.assign({}, r.data, data);
+    else if (colName === "groups") rawGroups = rawGroups.filter(function(x){ return x.id !== id; });
     else raw = raw.filter(function(x){ return x.id !== id; });
     normalize(); render();
     return Promise.resolve();
   }
   function newTaskData(p){
     return { title: p.title, tab: p.cat, priority: p.priority || "med", due: p.date || "", notes: p.notes || "",
+             group: p.group || "", step: p.group ? nextStep() : null,
              done: false, createdAt: new Date().toISOString(), completedAt: null };
   }
 
@@ -500,7 +617,8 @@
       '<button type="button" class="check" data-act="toggle" aria-pressed="'+t.done+'" aria-label="'+(t.done?"Mark not done":"Mark done")+'">'+(t.done?"✓":"")+'</button>' +
       '<button type="button" class="chip-title" data-act="open">'+(t.priority==="high"?'<span class="imp" aria-label="Important">!</span>':"")+esc(t.title)+
       (t.notes ? '<span class="has-notes" aria-label="Has notes">≡</span>' : "")+
-      (showCat ? '<span class="cattag"><span class="dot" style="--c:var(--cat-'+t.cat+')"></span>'+CAT[t.cat].label+'</span>' : "")+'</button>' +
+      (showCat ? '<span class="cattag"><span class="dot" style="--c:var(--cat-'+t.cat+')"></span>'+CAT[t.cat].label+'</span>' : "")+
+      (t.group ? '<span class="grouptag">@'+esc(GROUP[t.group].name)+'</span>' : "")+'</button>' +
     '</div>';
   }
   function cell(cat, date, cls, showCat, list){
@@ -588,9 +706,14 @@
     renderHeader();
     document.getElementById("weekView").hidden = view !== "week";
     document.getElementById("listView").hidden = view !== "list";
+    document.getElementById("groupsView").hidden = view !== "groups";
     document.getElementById("viewWeek").setAttribute("aria-pressed", view === "week");
     document.getElementById("viewList").setAttribute("aria-pressed", view === "list");
-    if (view === "week") { renderGrid(); renderAgenda(); } else renderList();
+    document.getElementById("viewGroups").setAttribute("aria-pressed", view === "groups");
+    if (view === "week") { renderGrid(); renderAgenda(); }
+    else if (view === "list") renderList();
+    else renderGroups();
+    updateSuggest();
     if (openId !== null) renderSheet();
     if (!document.getElementById("cal").hidden) renderCal();
   }
@@ -604,7 +727,11 @@
   }
   function addTask(p){
     if (!p.title) return;
-    write("add", null, newTaskData(p)).then(function(){ toast("Added to "+placeLabel(p)); }, function(){});
+    var label = placeLabel(p);
+    (p.group ? Promise.resolve(p.group) : resolveGroup(p.groupToken)).then(function(gid){
+      p.group = gid;
+      return write("add", null, newTaskData(p)).then(function(){ toast("Added to "+label.replace(" (new group)","")); });
+    }).catch(function(){});
   }
   function toggle(id){
     var t = find(id); if (!t) return;
@@ -625,7 +752,7 @@
   // Quick add
   var qi = document.getElementById("quickInput");
   function quickParse(){
-    var p = parse(qi.value, { cat:"general", date:null });
+    var p = inheritGroupCat(parse(qi.value, { cat:"general", date:null }));
     if (quickDate) p.date = quickDate;
     return p;
   }
@@ -633,6 +760,7 @@
     document.getElementById("quickPreview").textContent = placeLabel(quickParse());
     document.getElementById("quickClearDate").hidden = !quickDate;
     document.getElementById("quickCal").setAttribute("aria-pressed", !!quickDate);
+    updateSuggest();
   }
   qi.addEventListener("input", updatePreview);
   document.getElementById("quickForm").addEventListener("submit", function(e){
@@ -654,9 +782,10 @@
   function onCellsClick(e){
     var act = e.target.closest("[data-act]"); if (!act) return;
     var a = act.dataset.act;
-    var chipEl = act.closest(".chip");
+    var chipEl = act.closest("[data-id]");
     if (a === "toggle") { toggle(chipEl.dataset.id); return; }
     if (a === "open") { openSheet(chipEl.dataset.id); return; }
+    if (a === "up" || a === "down") { moveStep(chipEl.dataset.id, a === "up" ? -1 : 1); return; }
     if (a === "add") {
       var c = act.closest(".cell");
       var input = document.createElement("input");
@@ -667,6 +796,7 @@
       var commit = function(){
         if (committed) return; committed = true;
         var p = parse(input.value, { cat: c.dataset.cat, date: c.dataset.date || null });
+        if (p.groupToken && !p.catExplicit) p.catExplicit = true; // the cell's row is the category
         if (p.title) addTask(p); else render();
       };
       input.addEventListener("keydown", function(ev){
@@ -676,7 +806,7 @@
       input.addEventListener("blur", commit);
     }
   }
-  ["grid","agenda","listGroups"].forEach(function(id){ document.getElementById(id).addEventListener("click", onCellsClick); });
+  ["grid","agenda","listGroups","groupsHost"].forEach(function(id){ document.getElementById(id).addEventListener("click", onCellsClick); });
 
   // Drag & drop (desktop grid)
   var grid = document.getElementById("grid");
@@ -703,6 +833,211 @@
     if (t.cat === c.dataset.cat && t.date === date) return;
     move(t.id, c.dataset.cat, date);
   });
+
+  // ---------- @group suggestions under the quick-add box ----------
+  function updateSuggest(){
+    var box = document.getElementById("groupSuggest");
+    var last = qi.value.split(/\s+/).pop() || "";
+    if (last.charAt(0) !== "@") { box.hidden = true; return; }
+    var t = normName(last.slice(1));
+    var hits = groups.filter(function(g){
+      var n = normName(g.name);
+      return !t || n.indexOf(t) === 0 || n.split(" ").some(function(w){ return w.indexOf(t) === 0; });
+    }).sort(byRecent).slice(0,6);
+    var h = hits.map(function(g){ return '<button type="button" data-slug="'+esc(groupSlug(g.name))+'">@'+esc(g.name)+'</button>'; }).join("");
+    if (t && !matchGroup(t)) h += '<span>Enter creates a new group: <b>'+esc(groupNameFromToken(t))+'</b></span>';
+    if (!h) h = '<span>No groups yet — type a name after @ to start one, e.g. <b>@switch-gas</b></span>';
+    box.innerHTML = h;
+    box.hidden = false;
+  }
+  document.getElementById("groupSuggest").addEventListener("mousedown", function(e){ if (e.target.closest("button")) e.preventDefault(); });
+  document.getElementById("groupSuggest").addEventListener("click", function(e){
+    var b = e.target.closest("button[data-slug]"); if (!b) return;
+    var words = qi.value.split(/(\s+)/);
+    words[words.length-1] = "@"+b.dataset.slug+" ";
+    qi.value = words.join("");
+    qi.focus(); updatePreview(); updateSuggest();
+  });
+
+  // ---------- groups view ----------
+  var renamingId = null, confirmDeleteId = null, confirmTimer = null, finishedOpen = false, pendingFocus = null, groupsRendering = false;
+
+  function ago(s){
+    if (!s) return "—";
+    var days = Math.round((TODAY - sod(new Date(s))) / 86400000);
+    if (days <= 0) return "today";
+    if (days === 1) return "yesterday";
+    if (days < 14) return days+" days ago";
+    if (days < 60) return Math.round(days/7)+" weeks ago";
+    return Math.round(days/30)+" months ago";
+  }
+  function groupStats(g){
+    var steps = tasks.filter(function(t){ return t.group === g.id; }).sort(stepSort);
+    var done = steps.filter(function(t){ return t.done; }).length;
+    var last = g.createdAt;
+    steps.forEach(function(t){
+      if (t.createdAt > last) last = t.createdAt;
+      if (t.completedAt && t.completedAt > last) last = t.completedAt;
+    });
+    return { steps: steps, done: done, total: steps.length, pct: steps.length ? Math.round(done/steps.length*100) : 0,
+             next: steps.filter(function(t){ return !t.done; })[0] || null, last: last,
+             finished: steps.length > 0 && done === steps.length };
+  }
+  function groupCat(st){
+    var c = {}, best = "general", n = 0;
+    st.steps.forEach(function(t){ c[t.cat] = (c[t.cat]||0)+1; });
+    Object.keys(c).forEach(function(k){ if (c[k] > n) { best = k; n = c[k]; } });
+    return best;
+  }
+  function groupCard(g, st){
+    var gid = esc(g.id);
+    var left = st.total - st.done;
+    var h = '<article class="gcard'+(st.finished?" finished":"")+'" data-group="'+gid+'">';
+    h += '<div class="gcard-head">' +
+      (renamingId === g.id
+        ? '<input class="grename" id="grename-'+gid+'" value="'+esc(g.name)+'" maxlength="80" aria-label="Group name">'
+        : '<h3>'+esc(g.name)+'</h3>') +
+      '<span class="gleft">'+(!st.total ? "No steps yet" : left ? left+" left" : "All done")+'</span></div>';
+    h += '<div class="gpct"><span class="bar"><i style="width:'+st.pct+'%"></i></span><span class="num">'+st.done+'/'+st.total+' · '+st.pct+'%</span></div>';
+    h += '<div class="gmeta"><span>Started '+ago(g.createdAt)+'</span><span>Last activity '+ago(st.last)+'</span></div>';
+    if (st.total) {
+      h += '<ol class="steps">' + st.steps.map(function(t,i){
+        var isNext = st.next && st.next.id === t.id;
+        var overdue = !t.done && t.date && t.date < TODAY_ISO;
+        return '<li class="step'+(t.done?" done":"")+(isNext?" next":"")+'" data-id="'+esc(t.id)+'" style="--c:var(--cat-'+t.cat+')">' +
+          '<span class="step-n num">'+(i+1)+'</span>' +
+          '<button type="button" class="check" data-act="toggle" aria-pressed="'+t.done+'" aria-label="'+(t.done?"Mark not done":"Mark done")+'">'+(t.done?"✓":"")+'</button>' +
+          '<button type="button" class="chip-title" data-act="open">'+(t.priority==="high"?'<span class="imp" aria-label="Important">!</span>':"")+esc(t.title)+(isNext?'<span class="nextpill">Next</span>':"")+'</button>' +
+          (t.date ? '<span class="step-when'+(overdue?" overdue":"")+'">'+fmtDM(fromIso(t.date))+'</span>' : "") +
+          '<span class="step-move"><button type="button" data-act="up" aria-label="Move step up"'+(i===0?" disabled":"")+'>↑</button>' +
+          '<button type="button" data-act="down" aria-label="Move step down"'+(i===st.total-1?" disabled":"")+'>↓</button></span></li>';
+      }).join("") + '</ol>';
+    } else {
+      h += '<p class="gempty">Add the first step below — then the next, in the order you\'ll do them.</p>';
+    }
+    h += '<form class="gadd" data-group="'+gid+'" autocomplete="off"><input type="text" id="gadd-'+gid+'" maxlength="160" placeholder="Add a step (dates work: fri, 5 dec)" aria-label="Add a step to '+esc(g.name)+'"><button type="submit">Add</button></form>';
+    h += '<div class="gfoot"><button type="button" data-gact="rename">Rename</button>' +
+      '<button type="button" data-gact="delete"'+(confirmDeleteId===g.id?' class="confirm"':'')+'>'+(confirmDeleteId===g.id?"Confirm delete (steps stay as tasks)":"Delete group")+'</button></div>';
+    return h + '</article>';
+  }
+  function renderGroups(){
+    var host = document.getElementById("groupsHost");
+    var saved = {};
+    host.querySelectorAll("input[id]").forEach(function(i){ saved[i.id] = i.value; });
+    var ae = document.activeElement;
+    var focusId = ae && host.contains(ae) && ae.id ? ae.id : null;
+    var selStart = focusId && ae.selectionStart != null ? ae.selectionStart : null;
+
+    var list = groups.map(function(g){ return { g: g, st: groupStats(g) }; });
+    var recent = function(a,b){ return a.st.last < b.st.last ? 1 : -1; };
+    var active = list.filter(function(x){ return !x.st.finished; }).sort(recent);
+    var finished = list.filter(function(x){ return x.st.finished; }).sort(recent);
+    var h = '<div class="groups">' + active.map(function(x){ return groupCard(x.g, x.st); }).join("") +
+      '<form class="gcard gnew" id="newGroupForm" autocomplete="off"><h3>New group</h3>' +
+      '<p>For anything with several steps — switching a provider, getting documents notarised. You can also type <code>@name</code> in the add box.</p>' +
+      '<div class="gnew-row"><input type="text" id="newGroupName" maxlength="80" placeholder="e.g. Switch gas provider" aria-label="New group name"><button type="submit" class="btn primary">Create</button></div></form></div>';
+    if (finished.length) {
+      h += '<details class="gfinished"'+(finishedOpen?" open":"")+'><summary>Finished · '+finished.length+'</summary><div class="groups">' +
+        finished.map(function(x){ return groupCard(x.g, x.st); }).join("") + '</div></details>';
+    }
+    groupsRendering = true;
+    host.innerHTML = h;
+    groupsRendering = false;
+
+    Object.keys(saved).forEach(function(id){ var el = document.getElementById(id); if (el && saved[id]) el.value = saved[id]; });
+    var want = pendingFocus || focusId; pendingFocus = null;
+    if (want) {
+      var el = document.getElementById(want);
+      if (el) { el.focus(); if (selStart != null && want === focusId) { try { el.setSelectionRange(selStart, selStart); } catch (e) {} } }
+    }
+  }
+
+  function moveStep(id, dir){
+    var t = find(id); if (!t || !t.group) return;
+    var steps = groupStats(GROUP[t.group]).steps;
+    var i = steps.indexOf(t), j = i + dir;
+    if (i < 0 || j < 0 || j >= steps.length) return;
+    var a = steps[i], b = steps[j];
+    if (a.step !== null && b.step !== null && a.step !== b.step) {
+      write("update", a.id, { step: b.step }).catch(function(){});
+      write("update", b.id, { step: a.step }).catch(function(){});
+      return;
+    }
+    // Missing or tied step numbers: renumber the whole group in the new order.
+    var order = steps.slice(); order[i] = b; order[j] = a;
+    var base = nextStep();
+    lastStep = base + order.length;
+    order.forEach(function(x,k){ write("update", x.id, { step: base + k }).catch(function(){}); });
+  }
+  function createGroup(name){
+    name = name.trim(); if (!name) return;
+    var existing = groups.filter(function(g){ return normName(g.name) === normName(name); })[0];
+    if (existing) { pendingFocus = "gadd-"+existing.id; render(); toast("That group already exists"); return; }
+    write("add", null, { name: name, createdAt: new Date().toISOString() }, false, "groups").then(function(ref){
+      pendingFocus = "gadd-"+ref.id; render();
+    }, function(){});
+  }
+  function saveRename(gid, value){
+    renamingId = null;
+    var g = GROUP[gid]; var v = (value || "").trim();
+    if (g && v && v !== g.name) write("update", gid, { name: v }, false, "groups").catch(function(){});
+    render();
+  }
+  function deleteGroup(gid){
+    var members = tasks.filter(function(t){ return t.group === gid; });
+    write("delete", gid, null, false, "groups").then(function(){
+      members.forEach(function(t){ write("update", t.id, { group: "", step: null }, true).catch(function(){}); });
+      toast("Group deleted — its steps are still in your planner");
+    }, function(){});
+  }
+
+  var groupsHost = document.getElementById("groupsHost");
+  groupsHost.addEventListener("submit", function(e){
+    e.preventDefault();
+    var f = e.target;
+    if (f.id === "newGroupForm") {
+      var ni = document.getElementById("newGroupName");
+      var name = ni.value; ni.value = "";
+      createGroup(name);
+      return;
+    }
+    if (f.classList.contains("gadd")) {
+      var gid = f.dataset.group, g = GROUP[gid]; if (!g) return;
+      var input = f.querySelector("input");
+      var p = parse(input.value, { cat: groupCat(groupStats(g)), date: null });
+      input.value = "";
+      if (!p.title) return;
+      p.group = gid; p.groupToken = null;
+      pendingFocus = input.id;
+      addTask(p);
+    }
+  });
+  groupsHost.addEventListener("click", function(e){
+    var b = e.target.closest("[data-gact]");
+    var card = e.target.closest(".gcard[data-group]");
+    if (!b) { if (confirmDeleteId) { confirmDeleteId = null; render(); } return; }
+    var gid = card.dataset.group;
+    if (b.dataset.gact === "rename") { renamingId = gid; confirmDeleteId = null; pendingFocus = "grename-"+gid; render(); return; }
+    if (b.dataset.gact === "delete") {
+      if (confirmDeleteId === gid) { confirmDeleteId = null; deleteGroup(gid); return; }
+      confirmDeleteId = gid; render();
+      clearTimeout(confirmTimer); confirmTimer = setTimeout(function(){ if (confirmDeleteId === gid) { confirmDeleteId = null; render(); } }, 4000);
+    }
+  });
+  groupsHost.addEventListener("keydown", function(e){
+    if (!e.target.classList.contains("grename")) return;
+    var gid = e.target.closest(".gcard").dataset.group;
+    if (e.key === "Enter") { e.preventDefault(); saveRename(gid, e.target.value); }
+    if (e.key === "Escape") { e.stopPropagation(); renamingId = null; render(); }
+  });
+  groupsHost.addEventListener("focusout", function(e){
+    if (groupsRendering || !e.target.classList || !e.target.classList.contains("grename") || renamingId === null) return;
+    var gid = e.target.closest(".gcard").dataset.group;
+    if (gid === renamingId) saveRename(gid, e.target.value);
+  });
+  groupsHost.addEventListener("toggle", function(e){
+    if (e.target.classList && e.target.classList.contains("gfinished")) finishedOpen = e.target.open;
+  }, true);
 
   // Sheet (tap a task to edit / move)
   function openSheet(id){
@@ -746,7 +1081,35 @@
     }
     days += '<button type="button" class="pick" data-pick="1">'+CAL_SVG+' Other date…</button>';
     document.getElementById("sheetDays").innerHTML = days;
+    var sel = document.getElementById("sheetGroup");
+    if (fresh || document.activeElement !== sel) {
+      sel.innerHTML = '<option value="">No group</option>' +
+        groups.slice().sort(function(a,b){ return a.name.localeCompare(b.name); }).map(function(g){
+          return '<option value="'+esc(g.id)+'">@'+esc(g.name)+'</option>';
+        }).join("") + '<option value="__new">+ New group…</option>';
+      sel.value = t.group || "";
+    }
+    if (fresh) { var ng = document.getElementById("sheetNewGroup"); ng.hidden = true; ng.value = ""; }
   }
+  function setTaskGroup(id, gid){
+    var t = find(id); if (!t || (t.group || null) === (gid || null)) return;
+    write("update", id, { group: gid || "", step: gid ? nextStep() : null }).catch(function(){});
+  }
+  document.getElementById("sheetGroup").addEventListener("change", function(e){
+    var ng = document.getElementById("sheetNewGroup");
+    if (e.target.value === "__new") { ng.hidden = false; ng.focus(); return; }
+    ng.hidden = true;
+    setTaskGroup(openId, e.target.value);
+  });
+  document.getElementById("sheetNewGroup").addEventListener("keydown", function(e){
+    if (e.key === "Escape") { e.stopPropagation(); e.target.hidden = true; document.getElementById("sheetGroup").value = (find(openId) || {}).group || ""; return; }
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    var name = e.target.value.trim(), id = openId;
+    if (!name) return;
+    e.target.value = ""; e.target.hidden = true;
+    resolveGroup(name, true).then(function(gid){ setTaskGroup(id, gid); }, function(){});
+  });
   document.getElementById("sheetCats").addEventListener("click", function(e){
     var b = e.target.closest("button"); if (!b) return;
     var t = find(openId); if (t && t.cat !== b.dataset.cat) write("update", t.id, { tab: b.dataset.cat }).catch(function(){});
@@ -841,6 +1204,7 @@
   });
   document.getElementById("viewWeek").addEventListener("click", function(){ setView("week"); });
   document.getElementById("viewList").addEventListener("click", function(){ setView("list"); });
+  document.getElementById("viewGroups").addEventListener("click", function(){ setView("groups"); });
 
   // ---------- chat ----------
   var chatHistory = [], chatBusy = false;
@@ -856,7 +1220,7 @@
     var recentDone = tasks.filter(function(t){ return t.done; })
       .sort(function(a,b){ return (b.completedAt||"") < (a.completedAt||"") ? -1 : 1; }).slice(0,20);
     return open.concat(recentDone).slice(0,150).map(function(t){
-      return t.id+" · "+t.cat+" · "+(t.date || "backlog")+" · ["+(t.done?"x":" ")+"] "+t.title.slice(0,80)+(t.priority==="high"?" (important)":"");
+      return t.id+" · "+t.cat+" · "+(t.date || "backlog")+" · ["+(t.done?"x":" ")+"] "+t.title.slice(0,80)+(t.priority==="high"?" (important)":"")+(t.group?" · @"+GROUP[t.group].name:"");
     }).join("\n");
   }
   function buildInstructions(){
@@ -866,9 +1230,13 @@
       'Resolve relative dates yourself ("friday", "next week", "in a month", "5 Dec") to YYYY-MM-DD; dates are day/month when written with slashes. ' +
       'New tasks default to category general with no date unless the user says otherwise. ' +
       'If a request is ambiguous, choose the most reasonable match from the list rather than asking. ' +
+      'Tasks can also belong to a group: a free-form, long-running project (e.g. "Switch gas provider") whose steps are done in order. ' +
+      'When the user describes something with several steps, add each step to the same group in the order given (call add_task once per step, in order). ' +
+      'Use an existing group name exactly as listed when adding to it. ' +
       'After acting, reply with one short, friendly sentence saying what changed — no lists.\n\n' +
       "Today is " + TODAY.toLocaleDateString("en-GB", { weekday:"long" }) + " " + TODAY_ISO + ".\n\n" +
-      "Tasks (id · category · date · done · title):\n" + (chatContextTasks() || "(none yet)");
+      "Groups (name · done/total):\n" + (groups.map(function(g){ var st = groupStats(g); return g.name+" · "+st.done+"/"+st.total; }).join("\n") || "(none yet)") + "\n\n" +
+      "Tasks (id · category · date · done · title · @group):\n" + (chatContextTasks() || "(none yet)");
   }
   function validDate(v){ return typeof v === "string" && (v === "" || /^\d{4}-\d{2}-\d{2}$/.test(v)); }
   var CHAT_TOOLS = [
@@ -878,7 +1246,8 @@
       inputSchema: { type:"object", properties:{
         title:{ type:"string" }, category:{ type:"string", enum: CAT_IDS },
         due:{ type:"string", description:"YYYY-MM-DD, or empty for the Backlog" },
-        important:{ type:"boolean" }, notes:{ type:"string" }
+        important:{ type:"boolean" }, notes:{ type:"string" },
+        group:{ type:"string", description:"Group to add this task to as its next step. An existing group's exact name, or a new name to create the group. Omit for no group." }
       }, required:["title"] },
       execute: function(input){
         var title = String(input.title || "").trim().slice(0,160);
@@ -886,7 +1255,11 @@
         var p = { title: title, cat: CAT[input.category] ? input.category : "general",
                   date: validDate(input.due) && input.due ? input.due : null,
                   priority: input.important ? "high" : "med", notes: String(input.notes || "").slice(0,500) };
-        return write("add", null, newTaskData(p), true).then(function(ref){ return { id: ref.id, placed: placeLabel(p) }; });
+        var gname = typeof input.group === "string" ? input.group.trim().slice(0,80) : "";
+        return resolveGroup(gname, true).then(function(gid){
+          p.group = gid;
+          return write("add", null, newTaskData(p), true);
+        }).then(function(ref){ return { id: ref.id, placed: placeLabel(p) }; });
       }
     },
     {
@@ -912,7 +1285,8 @@
       description: "Edit or move a task by id: title, category, due date (YYYY-MM-DD, or empty string to move it to the Backlog), important flag or notes. Omit fields that stay the same.",
       inputSchema: { type:"object", properties:{
         id:{ type:"string" }, title:{ type:"string" }, category:{ type:"string", enum: CAT_IDS },
-        due:{ type:"string" }, important:{ type:"boolean" }, notes:{ type:"string" }
+        due:{ type:"string" }, important:{ type:"boolean" }, notes:{ type:"string" },
+        group:{ type:"string", description:"Move the task into this group (exact existing name, or a new name to create it); empty string removes it from its group." }
       }, required:["id"] },
       execute: function(input){
         var id = String(input.id), patch = {};
@@ -921,8 +1295,13 @@
         if (validDate(input.due)) patch.due = input.due;
         if (typeof input.important === "boolean") patch.priority = input.important ? "high" : "med";
         if (typeof input.notes === "string") patch.notes = input.notes.slice(0,500);
-        if (!Object.keys(patch).length) return { id:id, updated:false };
-        return write("update", id, patch, true).then(function(){ return { id:id, updated:true }; });
+        var gname = typeof input.group === "string" ? input.group.trim().slice(0,80) : null;
+        var gp = gname === null ? Promise.resolve(undefined) : resolveGroup(gname, true);
+        return gp.then(function(gid){
+          if (gid !== undefined) { patch.group = gid || ""; patch.step = gid ? nextStep() : null; }
+          if (!Object.keys(patch).length) return { id:id, updated:false };
+          return write("update", id, patch, true).then(function(){ return { id:id, updated:true }; });
+        });
       }
     },
     {
@@ -996,12 +1375,15 @@
   Promise.all([useCap("db"), useCap("sample")]).then(function(res){
     db = res[0]; sample = res[1];
     if (db) {
+      var syncLost = function(){ document.getElementById("syncBadge").hidden = false; };
+      db.collection("groups").onSnapshot(function(snap){
+        rawGroups = snap.docs.map(function(d){ return { id: d.id, data: d.data() }; });
+        normalize(); render();
+      }, syncLost);
       db.collection("tasks").onSnapshot(function(snap){
         raw = snap.docs.map(function(d){ return { id: d.id, data: d.data() }; });
         normalize(); render();
-      }, function(){
-        document.getElementById("syncBadge").hidden = false;
-      });
+      }, syncLost);
     } else {
       document.getElementById("syncBadge").hidden = false;
     }
