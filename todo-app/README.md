@@ -1,39 +1,46 @@
-# Waypoint — to-do list
+# Waypoint — weekly planner
 
 Source for the published Claude Artifact: `waypoint.html`.
 
-Live app: https://claude.ai/code/artifact/29c2e2c2-2389-4e0f-bd63-4396c50866b7
+Live app: https://claude.ai/artifact/6A6gGG7TcVkxwX5caAL6AJ
 
 A single-file HTML app, published as a Claude Artifact, so it runs as a normal
 responsive web page on desktop and mobile with no separate hosting.
 
 ## What it does
 
-- **Tabs** — Work / Personal / Health / Admin, plus an "All" view. Each tab
-  shows a live `done/total` count.
-- **Progress** — an overall progress bar, plus "done today", "done this
-  week" and a day streak, so effort is visible rather than buried in a long
-  list.
-- **Recently completed feed** — a short log of what was just finished.
-- **Manual editing** — add, check off, edit (category/priority/due
-  date/notes) and delete tasks directly in the UI.
-- **Chat button** — a built-in "Ask Claude" panel (bottom-right) lets you
-  update the list in plain English (e.g. "mark dentist done", "add call mom
-  to personal, due Friday"). It calls Claude directly from the page (the
-  viewer's own Claude usage) with tools to add/complete/reopen/edit/delete
-  tasks — no separate chat session needed.
+- **Week view (front page)** — a planner grid: one row per category (Work,
+  Social, Health, Admin, General), one column for the undated Backlog, then
+  Mon–Sun. Today's column is highlighted. On phones the grid becomes a
+  scrolling agenda (Backlog first, then each day).
+- **List view** — every task grouped by category, sorted by date.
+- **Quick add** — type a task and press Enter; it lands in General · Backlog ·
+  Medium. Optional shortcuts at the end of the text:
+  - category: `#work`, `#social`, `#health`, `#admin`, `#general` (prefixes work, e.g. `#soc`)
+  - important: `!`
+  - dates: `today`, `tomorrow`, `fri`, `next fri`, `next week`, `next month`,
+    `in 3 days|weeks|months`, `5 dec`, `dec 5th`, `5/12` (day/month),
+    `31/01/2027`, `the 15th`, `2026-12-05`
+  A preview under the box shows where the task will land before you add it.
+- **Calendar picker** — a month calendar (with dots on days that already have
+  tasks) from the add box, from "Other date…" in the task editor, and from the
+  week label to jump to any week.
+- **Moving tasks** — drag between cells on desktop, or tap a task to change
+  category, day, importance and notes.
+- **Progress** — week progress bar, per-day done/total, done today, day streak,
+  backlog size.
+- **Ask Claude** — the 💬 button lets you change the planner in plain English
+  ("move dentist to Friday", "add renew passport to admin on 5 Dec").
 
 ## How it's built
 
-- Data lives in the artifact's `db` capability (a shared, realtime document
-  store per artifact) — the `tasks` collection, one document per task
-  (`title`, `tab`, `priority`, `due`, `notes`, `done`, `createdAt`,
-  `completedAt`). Every open tab of the page stays in sync live.
-- The chat panel uses the `sample` capability to ask Claude, passing the
-  current task list as context and a small set of page-defined tools
+- Data lives in the artifact's `db` capability, collection `tasks`, one
+  document per task: `title`, `tab` (category id), `priority` (`med`|`high`),
+  `due` (`YYYY-MM-DD`, empty = Backlog), `notes`, `done`, `createdAt`,
+  `completedAt`. Every open copy of the page stays in sync live.
+- The chat panel uses the `sample` capability with page-defined tools
   (`add_task`, `complete_task`, `reopen_task`, `update_task`, `delete_task`)
-  that write straight to the same `db` collection the manual UI uses — so
-  both update paths are the same data.
+  that write to the same `tasks` collection as the manual UI.
 - No backend, no build step — publishing the HTML file *is* the deploy.
 
 ## Editing
