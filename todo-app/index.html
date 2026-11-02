@@ -148,7 +148,7 @@
   .ccount{ align-self:flex-start; border:none; background:none; padding:1px 4px; border-radius:5px; font-size:.72rem; color:var(--ink-dim); cursor:pointer; }
   .ccount:hover{ background:var(--surface-2); color:var(--ink); }
   .ccount .hi{ color:var(--warn); font-weight:700; }
-  .datetag{ display:block; font-size:.68rem; color:var(--ink-dim); margin-top:2px; font-weight:500; }
+  .datetag{ display:inline-block; font-size:.68rem; color:var(--ink-dim); margin-left:6px; font-weight:500; white-space:nowrap; }
   .datetag.overdue{ color:var(--warn); font-weight:600; }
   .later-head .title{ font-family:"Fraunces", Georgia, serif; font-size:1.25rem; font-weight:500; line-height:1.1; }
   .rowhead .sub{ font-size:.7rem; color:var(--ink-faint); }
@@ -192,16 +192,20 @@
   @media (max-width:760px){ .grid-wrap{ display:none; } .agenda{ display:flex; } }
 
   /* List view */
-  .listview{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:12px; }
+  .listview{ display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:12px; align-items:start; }
   .lv-group{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:6px; }
   .lv-group h3{ margin:0 0 4px; font-size:.9rem; display:flex; align-items:center; gap:7px; }
-  .lv-row{ display:flex; align-items:flex-start; gap:8px; }
-  .lv-row .chip{ flex:1; }
-  .lv-when{ font-size:.7rem; color:var(--ink-faint); white-space:nowrap; padding-top:7px; min-width:62px; text-align:right; }
-  .lv-when.overdue{ color:var(--warn); font-weight:600; }
+  .lv-group.drop{ outline:2px dashed var(--accent); outline-offset:-3px; }
 
   /* Group label on chips + @ suggestions */
-  .grouptag{ display:block; font-size:.68rem; color:var(--ink-faint); margin-top:2px; }
+  .grouptag{ display:inline-block; font-size:.68rem; color:var(--ink-faint); margin-left:6px; white-space:nowrap; }
+  .titem{ display:flex; flex-direction:column; gap:2px; position:relative; }
+  .tsub{ display:flex; flex-direction:column; gap:2px; margin:0 0 0 12px; padding-left:7px; border-left:2px solid var(--line-strong); }
+  .tsub .chip{ padding:3px 6px 3px 5px; font-size:.76rem; background:transparent; border-color:transparent; }
+  .tsub .chip:hover{ background:var(--surface); border-color:var(--line); }
+  .titem.drop-before::before, .titem.drop-after::after{ content:""; position:absolute; left:0; right:0; height:3px; border-radius:3px; background:var(--accent); }
+  .titem.drop-before::before{ top:-4px; }
+  .titem.drop-after::after{ bottom:-4px; }
   .chip.done .grouptag{ text-decoration:none; }
   .gsuggest{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:0 4px; margin-top:-6px; font-size:.78rem; color:var(--ink-faint); }
   .gsuggest button{ border:1px solid var(--line); background:var(--surface); border-radius:999px; padding:4px 10px; font-size:.78rem; cursor:pointer; color:var(--ink-dim); }
@@ -571,6 +575,7 @@
         done: !!x.done,
         group: x.group && GROUP[x.group] ? x.group : null,
         step: typeof x.step === "number" ? x.step : null,
+        order: typeof x.order === "number" ? x.order : null,
         createdAt: String(x.createdAt || ""),
         completedAt: x.completedAt || null
       };
@@ -742,23 +747,49 @@
     while (set[iso(c)]) { n++; c = addDays(c,-1); }
     return n;
   }
+  // Manual order: tasks you've dragged carry an `order` number; others rank by when they were created,
+  // so untouched lists keep their old order and new tasks land at the bottom. Ticked tasks sink.
+  function rankOf(t){ return t.order !== null && t.order !== undefined ? t.order : (Date.parse(t.createdAt) || 0); }
   function sortTasks(list){
     return list.slice().sort(function(a,b){
       if (a.done !== b.done) return a.done ? 1 : -1;
-      if (a.priority !== b.priority) return a.priority === "high" ? -1 : 1;
-      return a.createdAt < b.createdAt ? -1 : a.createdAt > b.createdAt ? 1 : 0;
+      return rankOf(a) - rankOf(b);
     });
+  }
+  // Tasks from the same group in one cell/list show as one block: the group's first unfinished step on top,
+  // its other steps nested underneath in step order. The block sits where that top step is placed.
+  function taskTree(sorted){
+    var members = {};
+    sorted.forEach(function(t){ if (t.group) (members[t.group] = members[t.group] || []).push(t); });
+    var heads = {};
+    Object.keys(members).forEach(function(g){
+      var steps = members[g].slice().sort(stepSort);
+      var head = steps.filter(function(t){ return !t.done; })[0] || steps[0];
+      heads[g] = { t: head, kids: steps.filter(function(t){ return t !== head; }) };
+    });
+    var out = [];
+    sorted.forEach(function(t){
+      if (!t.group) out.push({ t: t, kids: [] });
+      else if (heads[t.group].t === t) out.push(heads[t.group]);
+    });
+    return out;
+  }
+  function treeHtml(nodes, showCat, dateFn){
+    return nodes.map(function(n){
+      return '<div class="titem" data-tid="'+esc(n.t.id)+'" data-rank="'+rankOf(n.t)+'">' + chip(n.t, showCat, dateFn(n.t), false) +
+        (n.kids.length ? '<div class="tsub">' + n.kids.map(function(k){ return chip(k, showCat, dateFn(k), true); }).join("") + '</div>' : '') + '</div>';
+    }).join("");
   }
 
   // ---------- render ----------
-  function chip(t, showCat, showDate){
+  function chip(t, showCat, showDate, isChild){
     return '<div class="chip'+(t.done?" done":"")+markCls(t.id)+'" draggable="true" data-id="'+esc(t.id)+'" style="--c:var(--cat-'+t.cat+')">' +
       '<button type="button" class="check" data-act="toggle" tabindex="-1" aria-pressed="'+t.done+'" aria-label="'+(t.done?"Mark not done":"Mark done")+'">'+(t.done?"✓":"")+'</button>' +
       '<button type="button" class="chip-title" data-act="open">'+(t.priority==="high"?'<span class="imp" aria-label="Important">!</span>':"")+esc(t.title)+
       (t.notes ? '<span class="has-notes" aria-label="Has notes">≡</span>' : "")+
       (showCat ? '<span class="cattag"><span class="dot" style="--c:var(--cat-'+t.cat+')"></span>'+CAT[t.cat].label+'</span>' : "")+
       (showDate && t.date ? '<span class="datetag'+(!t.done && t.date < TODAY_ISO ? " overdue" : "")+'">'+(!t.done && t.date < TODAY_ISO ? "Overdue · " : "")+fmtDay(fromIso(t.date))+'</span>' : "")+
-      (t.group ? '<span class="grouptag">@'+esc(GROUP[t.group].name)+'</span>' : "")+'</button>' +
+      (t.group && !isChild ? '<span class="grouptag">@'+esc(GROUP[t.group].name)+'</span>' : "")+'</button>' +
     '</div>';
   }
   // opts: { dated: show each task's date, byDate: sort by date, collapsed: show a count instead of chips }
@@ -772,7 +803,7 @@
       cls += opts.colKey ? " collapsed colcollapsed" : " collapsed";
     } else {
       var sorted = opts.byDate ? list.slice().sort(function(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; }) : sortTasks(list);
-      body = sorted.map(function(t){ return chip(t, showCat, opts.dated || (t.date && date !== t.date)); }).join("") +
+      body = treeHtml(taskTree(sorted), showCat, function(t){ return opts.dated || (t.date && date !== t.date); }) +
         pasteBtn() + '<button type="button" class="add" data-act="add">+ Add</button>';
     }
     return '<div class="cell '+cls+'" tabindex="-1" data-cat="'+cat+'" data-date="'+(date||"")+'">' + body + '</div>';
@@ -990,18 +1021,9 @@
 
   function renderList(){
     document.getElementById("listGroups").innerHTML = orderedCats().map(function(c){
-      var list = tasks.filter(function(t){ return t.cat === c.id; }).sort(function(a,b){
-        if (a.done !== b.done) return a.done ? 1 : -1;
-        var ad = a.date || "9999", bd = b.date || "9999";
-        if (ad !== bd) return ad < bd ? -1 : 1;
-        if (a.priority !== b.priority) return a.priority === "high" ? -1 : 1;
-        return a.createdAt < b.createdAt ? -1 : 1;
-      });
+      var list = sortTasks(tasks.filter(function(t){ return t.cat === c.id; }));
       return '<div class="lv-group" tabindex="-1" data-cat="'+c.id+'"><h3><span class="dot" style="--c:var(--cat-'+c.id+')"></span>'+c.label+' <span class="num nudge">'+list.filter(function(t){ return t.done; }).length+'/'+list.length+'</span></h3>' +
-        (list.length ? list.map(function(t){
-          var overdue = !t.done && t.date && t.date < TODAY_ISO;
-          return '<div class="lv-row">'+chip(t,false)+'<span class="lv-when'+(overdue?" overdue":"")+'">'+(t.date ? fmtDM(fromIso(t.date)) : "Backlog")+'</span></div>';
-        }).join("") : '<span class="nudge">Nothing here</span>') + pasteBtn() + '</div>';
+        (list.length ? treeHtml(taskTree(list), false, function(t){ return !!t.date; }) : '<span class="nudge">Nothing here</span>') + pasteBtn() + '</div>';
     }).join("");
   }
 
@@ -1161,32 +1183,104 @@
   }
   ["grid","agenda","listGroups","groupsHost"].forEach(function(id){ document.getElementById(id).addEventListener("click", onCellsClick); });
 
-  // Drag & drop (desktop grid)
+  // Drag & drop (desktop week grid and List view). Where you drop sets the order: a blue line shows the spot.
   var grid = document.getElementById("grid");
-  function clearDrop(){ grid.querySelectorAll(".drop").forEach(function(x){ x.classList.remove("drop"); }); }
-  grid.addEventListener("dragstart", function(e){
-    var c = e.target.closest(".chip"); if (!c) return;
-    e.dataTransfer.setData("text/plain", c.dataset.id); e.dataTransfer.effectAllowed = "move";
-    c.classList.add("dragging");
-  });
-  grid.addEventListener("dragend", function(e){
-    var c = e.target.closest(".chip"); if (c) c.classList.remove("dragging");
-    clearDrop();
-  });
-  grid.addEventListener("dragover", function(e){
-    var c = e.target.closest(".cell"); if (!c) return;
-    e.preventDefault();
-    if (!c.classList.contains("drop")) { clearDrop(); c.classList.add("drop"); }
-  });
-  grid.addEventListener("drop", function(e){
-    var c = e.target.closest(".cell"); if (!c) return;
-    e.preventDefault(); clearDrop();
-    var t = find(e.dataTransfer.getData("text/plain")); if (!t) return;
-    if (c.dataset.date === "later") { pickLaterDate(function(v){ move(t.id, c.dataset.cat, v); }, t.date); return; }
-    var date = c.dataset.date || null;
-    if (t.cat === c.dataset.cat && t.date === date) return;
-    move(t.id, c.dataset.cat, date);
-  });
+  var listHost = document.getElementById("listGroups");
+  function clearDrop(){
+    document.querySelectorAll(".drop, .drop-before, .drop-after").forEach(function(x){ x.classList.remove("drop", "drop-before", "drop-after"); });
+  }
+  // The open, top-level items of a cell or list (sub-items follow their group, ticked tasks stay at the bottom).
+  function slotItems(container, skipId){
+    return Array.prototype.filter.call(container.children, function(el){
+      return el.classList && el.classList.contains("titem") && el.dataset.tid !== skipId && !el.firstElementChild.classList.contains("done");
+    });
+  }
+  function slotAt(container, y, skipId){
+    var items = slotItems(container, skipId), idx = items.length;
+    for (var i = 0; i < items.length; i++) { var r = items[i].getBoundingClientRect(); if (y < r.top + r.height / 2) { idx = i; break; } }
+    return { items: items, idx: idx };
+  }
+  function rankBetween(prev, next){
+    if (prev === null && next === null) return Date.now();
+    if (prev === null) return next - 1000;
+    if (next === null) return prev + 1000;
+    return next - prev > 1e-6 ? (prev + next) / 2 : null;
+  }
+  // Place task `id` at position `idx` among `items`, with any extra field changes (category / date).
+  function placeAt(id, items, idx, extra, label){
+    var r = function(el){ return el ? +el.dataset.rank : null; };
+    var rank = rankBetween(r(items[idx - 1]), r(items[idx]));
+    var changes;
+    if (rank === null) {
+      // Ranks ran out of room between two neighbours: renumber the whole list in its new order.
+      var ids = items.map(function(el){ return el.dataset.tid; }); ids.splice(idx, 0, id);
+      var base = r(items[0]);
+      changes = ids.map(function(x, k){ return { id: x, patch: x === id ? Object.assign({ order: base + k * 1000 }, extra) : { order: base + k * 1000 } }; });
+    } else changes = [{ id: id, patch: Object.assign({ order: rank }, extra) }];
+    return updateTasks(changes, label);
+  }
+  function wireDrag(host, containerSel){
+    host.addEventListener("dragstart", function(e){
+      var c = e.target.closest(".chip"); if (!c) return;
+      e.dataTransfer.setData("text/plain", c.dataset.id); e.dataTransfer.effectAllowed = "move";
+      c.classList.add("dragging");
+    });
+    host.addEventListener("dragend", function(e){
+      var c = e.target.closest(".chip"); if (c) c.classList.remove("dragging");
+      clearDrop();
+    });
+    host.addEventListener("dragover", function(e){
+      var c = e.target.closest(containerSel); if (!c) return;
+      e.preventDefault();
+      var drag = host.querySelector(".chip.dragging"), slot = slotAt(c, e.clientY, drag ? drag.dataset.id : null);
+      clearDrop(); c.classList.add("drop");
+      if (slot.items[slot.idx]) slot.items[slot.idx].classList.add("drop-before");
+      else if (slot.items.length) slot.items[slot.items.length - 1].classList.add("drop-after");
+    });
+    host.addEventListener("dragleave", function(e){
+      var c = e.target.closest(containerSel);
+      if (c && !c.contains(e.relatedTarget)) clearDrop();
+    });
+    host.addEventListener("drop", function(e){
+      var c = e.target.closest(containerSel); if (!c) return;
+      e.preventDefault(); clearDrop();
+      var t = find(e.dataTransfer.getData("text/plain")); if (!t) return;
+      var slot = slotAt(c, e.clientY, t.id), extra = {}, where;
+      if (c.classList.contains("lv-group")) {
+        if (t.cat !== c.dataset.cat) extra.tab = c.dataset.cat;
+        where = CAT[c.dataset.cat].label;
+      } else if (c.dataset.date === "later") {
+        pickLaterDate(function(v){
+          placeAt(t.id, slot.items, slot.idx, { tab: c.dataset.cat, due: v }, "move \u201c"+t.title.slice(0,40)+"\u201d")
+            .then(function(){ toast("Moved to "+placeLabel({ cat: c.dataset.cat, date: v, priority: "med" })); }, noop);
+        }, t.date);
+        return;
+      } else {
+        var date = c.dataset.date || null;
+        if (t.cat !== c.dataset.cat) extra.tab = c.dataset.cat;
+        if (t.date !== date) extra.due = date || "";
+        where = placeLabel({ cat: c.dataset.cat, date: date, priority: "med" });
+      }
+      var moved = Object.keys(extra).length > 0;
+      placeAt(t.id, slot.items, slot.idx, extra, (moved ? "move \u201c" : "reorder \u201c")+t.title.slice(0,40)+"\u201d")
+        .then(function(){ if (moved) toast("Moved to "+where); }, noop);
+    });
+  }
+  wireDrag(grid, ".cell");
+  wireDrag(listHost, ".lv-group");
+
+  // Alt+↑ / Alt+↓: move the focused task up or down within its cell or list.
+  function nudgeOrder(id, dir){
+    var chipEl = document.activeElement && document.activeElement.closest("[data-id]");
+    if (!chipEl || chipEl.dataset.id !== id) return;
+    if (chipEl.closest(".tsub")) { toast("Sub-items follow their group's step order — change it in the Groups view"); return; }
+    var item = chipEl.closest(".titem"), container = item && item.parentNode;
+    if (!container || chipEl.classList.contains("done")) return;
+    var items = slotItems(container, null), i = items.indexOf(item), j = i + dir;
+    if (i < 0 || j < 0 || j >= items.length) return;
+    var others = items.filter(function(el){ return el !== item; });
+    placeAt(id, others, dir < 0 ? j : j, {}, "reorder \u201c"+(find(id) || { title: "task" }).title.slice(0,40)+"\u201d");
+  }
 
   // ---------- @group suggestions under the quick-add box ----------
   function updateSuggest(){
@@ -1826,6 +1920,7 @@
       ["Enter", "Edit the task · on an empty cell, add a task there"],
       ["x  ·  " + MOD + "click", "Select a task (pick several)"],
       ["Shift + ↑ ↓", "Select while moving"],
+      ["Alt + ↑ ↓", "Move the task up / down in its cell or list (or drag it)"],
       [MOD + "A", "Select everything in this cell, list or group"],
       [MOD + "X  ·  " + MOD + "C", "Cut / copy the selected (or focused) tasks"],
       [MOD + "V", "Paste onto the focused cell, list or group card. Text copied from elsewhere becomes tasks, one per line"],
@@ -1894,7 +1989,10 @@
       }
       return;
     }
-    if (e.altKey) return;
+    if (e.altKey) {
+      if ((k === "ArrowUp" || k === "ArrowDown") && focusedTaskId()) { e.preventDefault(); nudgeOrder(focusedTaskId(), k === "ArrowUp" ? -1 : 1); }
+      return;
+    }
     var id;
     switch (k) {
       case "ArrowUp": case "ArrowDown": case "ArrowLeft": case "ArrowRight":
