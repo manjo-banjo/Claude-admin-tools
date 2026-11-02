@@ -3,40 +3,43 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#2F6F5E">
+<meta name="theme-color" content="#23588F">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Waypoint">
 <meta name="robots" content="noindex">
 <title>Waypoint</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232F6F5E'/%3E%3Cpath d='M30 52l14 14 26-30' fill='none' stroke='white' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2323588F'/%3E%3Cpath d='M30 52l14 14 26-30' fill='none' stroke='white' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
   :root{
-    --bg:#F1F3EF; --surface:#FFFFFF; --surface-2:#E9EDE7; --line:#DDE3DA; --line-strong:#C9D2C6;
-    --ink:#1B2420; --ink-dim:#56655B; --ink-faint:#89958B;
-    --accent:#2F6F5E; --accent-ink:#FFFFFF; --accent-soft:#DCEBE4; --today:#E7F1EC;
-    --dot:#CBD3C8; --warn:#A83E3E; --warn-soft:#F3DEDD;
-    --cat-work:#3D6B8E; --cat-social:#B04E6B; --cat-health:#3E7C4F; --cat-admin:#A86A26; --cat-general:#6A6790;
-    --shadow:0 18px 40px -18px rgba(27,36,32,.35);
+    --bg:#F2F4F8; --surface:#FFFFFF; --surface-2:#E8EDF3; --line:#DCE3EC; --line-strong:#C6D0DC;
+    --ink:#17202B; --ink-dim:#536275; --ink-faint:#8693A4;
+    --accent:#23588F; --accent-ink:#FFFFFF; --accent-soft:#DDE8F5;
+    --hl:#D9701A; --hl-soft:#FCEBDA; --today:#FDF3E8;
+    --dot:#C9D2DE; --warn:#B23A3A; --warn-soft:#F6DEDE;
+    --cat-work:#1F7F95; --cat-social:#B04E6B; --cat-health:#3E7C4F; --cat-admin:#9A6420; --cat-general:#6A6790;
+    --shadow:0 18px 40px -18px rgba(23,32,43,.35);
     color-scheme:light;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --bg:#111915; --surface:#17221E; --surface-2:#1E2B26; --line:#26352E; --line-strong:#33463D;
-      --ink:#E6ECE7; --ink-dim:#9DAFA3; --ink-faint:#6D7E74;
-      --accent:#6FCBAF; --accent-ink:#0E1712; --accent-soft:#21382F; --today:#1A2B24;
-      --dot:#2B3B33; --warn:#E39494; --warn-soft:#3A2323;
-      --cat-work:#8DBBDD; --cat-social:#E895AE; --cat-health:#8FCB9C; --cat-admin:#E3AE6E; --cat-general:#B3B0D6;
+      --bg:#0F151D; --surface:#151E29; --surface-2:#1C2734; --line:#253242; --line-strong:#324356;
+      --ink:#E5EBF2; --ink-dim:#9CACBE; --ink-faint:#6A7A8C;
+      --accent:#78AEE6; --accent-ink:#0D1622; --accent-soft:#1D3047;
+      --hl:#F29A4A; --hl-soft:#3A2817; --today:#221D19;
+      --dot:#283546; --warn:#E89494; --warn-soft:#3A2323;
+      --cat-work:#6CC3D6; --cat-social:#E895AE; --cat-health:#8FCB9C; --cat-admin:#E0B070; --cat-general:#B3B0D6;
       --shadow:0 18px 40px -18px rgba(0,0,0,.6);
       color-scheme:dark;
     }
   }
   :root[data-theme="dark"]{
-    --bg:#111915; --surface:#17221E; --surface-2:#1E2B26; --line:#26352E; --line-strong:#33463D;
-    --ink:#E6ECE7; --ink-dim:#9DAFA3; --ink-faint:#6D7E74;
-    --accent:#6FCBAF; --accent-ink:#0E1712; --accent-soft:#21382F; --today:#1A2B24;
-    --dot:#2B3B33; --warn:#E39494; --warn-soft:#3A2323;
-    --cat-work:#8DBBDD; --cat-social:#E895AE; --cat-health:#8FCB9C; --cat-admin:#E3AE6E; --cat-general:#B3B0D6;
+    --bg:#0F151D; --surface:#151E29; --surface-2:#1C2734; --line:#253242; --line-strong:#324356;
+    --ink:#E5EBF2; --ink-dim:#9CACBE; --ink-faint:#6A7A8C;
+    --accent:#78AEE6; --accent-ink:#0D1622; --accent-soft:#1D3047;
+    --hl:#F29A4A; --hl-soft:#3A2817; --today:#221D19;
+    --dot:#283546; --warn:#E89494; --warn-soft:#3A2323;
+    --cat-work:#6CC3D6; --cat-social:#E895AE; --cat-health:#8FCB9C; --cat-admin:#E0B070; --cat-general:#B3B0D6;
     --shadow:0 18px 40px -18px rgba(0,0,0,.6);
     color-scheme:dark;
   }
@@ -80,7 +83,7 @@
 
   /* Quick add */
   .quick{ background:var(--surface); border:1px solid var(--line-strong); border-radius:14px; padding:6px 6px 6px 14px; display:flex; align-items:center; gap:8px; box-shadow:0 1px 0 var(--line); }
-  .quick .plus{ color:var(--accent); font-size:1.3rem; font-weight:500; line-height:1; }
+  .quick .plus{ color:var(--hl); font-size:1.3rem; font-weight:500; line-height:1; }
   .quick input{ flex:1; min-width:0; border:none; background:transparent; font-size:1rem; padding:10px 0; outline:none; }
   .qcal{ flex:none; width:42px; height:40px; border:1px solid var(--line); background:var(--surface); border-radius:10px; display:grid; place-items:center; cursor:pointer; color:var(--ink-dim); }
   .qcal:hover, .qcal[aria-pressed="true"]{ color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
@@ -102,7 +105,7 @@
   .colhead .dow{ font-size:.7rem; text-transform:uppercase; letter-spacing:.09em; color:var(--ink-faint); font-weight:600; }
   .colhead .daynum{ font-family:"Fraunces", Georgia, serif; font-size:1.65rem; font-weight:500; line-height:1; }
   .colhead.is-past .daynum{ color:var(--ink-faint); }
-  .colhead.is-today .dow, .colhead.is-today .daynum{ color:var(--accent); }
+  .colhead.is-today .dow, .colhead.is-today .daynum{ color:var(--hl); }
   .mini{ display:flex; align-items:center; gap:6px; font-size:.68rem; color:var(--ink-faint); }
   .mini .bar{ flex:1; height:4px; border:none; }
   .backlog-head .title{ font-family:"Fraunces", Georgia, serif; font-size:1.25rem; font-weight:500; line-height:1.1; }
@@ -114,6 +117,7 @@
   .cell{ min-height:96px; padding:6px; display:flex; flex-direction:column; gap:5px; transition:background .15s; }
   .cell.backlog{ background-color:var(--bg); background-image:radial-gradient(var(--dot) 1px, transparent 1.3px); background-size:14px 14px; }
   .cell.is-today, .colhead.is-today{ background:var(--today); }
+  .colhead.is-today{ box-shadow:inset 0 3px 0 var(--hl); }
   .cell.drop{ background:var(--accent-soft); outline:2px dashed var(--accent); outline-offset:-3px; }
 
   .chip{ display:flex; align-items:flex-start; gap:6px; background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:5px 7px 5px 6px; font-size:.8rem; line-height:1.3; cursor:grab; }
@@ -140,8 +144,8 @@
   .ag-day header .when{ display:flex; align-items:baseline; gap:8px; }
   .ag-day header .daynum{ font-family:"Fraunces", Georgia, serif; font-size:1.35rem; font-weight:500; line-height:1; }
   .ag-day header .dow{ font-size:.75rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-faint); font-weight:600; }
-  .ag-day.is-today header{ background:var(--today); }
-  .ag-day.is-today .daynum, .ag-day.is-today .dow{ color:var(--accent); }
+  .ag-day.is-today header{ background:var(--today); box-shadow:inset 3px 0 0 var(--hl); }
+  .ag-day.is-today .daynum, .ag-day.is-today .dow{ color:var(--hl); }
   .ag-day.is-past{ opacity:.8; }
   .ag-day .cell{ min-height:0; padding:8px; }
   .ag-day header .mini{ width:96px; }
@@ -182,7 +186,7 @@
   .step .check{ margin-top:1px; }
   .step.done .check{ background:var(--c); }
   .step.done .chip-title{ text-decoration:line-through; color:var(--ink-faint); }
-  .nextpill{ display:inline-block; margin-left:6px; font-size:.64rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--accent); vertical-align:1px; }
+  .nextpill{ display:inline-block; margin-left:6px; font-size:.64rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--hl); vertical-align:1px; }
   .step-when{ flex:none; font-size:.72rem; color:var(--ink-faint); padding-top:1px; white-space:nowrap; }
   .step-when.overdue{ color:var(--warn); font-weight:600; }
   .step-move{ flex:none; display:flex; gap:2px; }
@@ -249,7 +253,7 @@
   .cal-day{ position:relative; height:40px; border:none; background:none; border-radius:9px; font-size:.86rem; cursor:pointer; font-variant-numeric:tabular-nums; }
   .cal-day:hover{ background:var(--surface-2); }
   .cal-day.is-past{ color:var(--ink-faint); }
-  .cal-day.is-today{ box-shadow:inset 0 0 0 1.5px var(--accent); color:var(--accent); font-weight:600; }
+  .cal-day.is-today{ box-shadow:inset 0 0 0 1.5px var(--hl); color:var(--hl); font-weight:600; }
   .cal-day.is-sel{ background:var(--accent); color:var(--accent-ink); font-weight:600; }
   .cal-day.has-tasks::after{ content:""; position:absolute; left:50%; bottom:5px; width:4px; height:4px; margin-left:-2px; border-radius:50%; background:var(--ink-faint); }
   .cal-day.is-sel.has-tasks::after{ background:var(--accent-ink); }
