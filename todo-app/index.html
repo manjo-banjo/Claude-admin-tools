@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="Waypoint">
 <meta name="robots" content="noindex">
 <title>Waypoint</title>
+<script>try{var t=localStorage.getItem("waypoint.theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2323588F'/%3E%3Cpath d='M30 52l14 14 26-30' fill='none' stroke='white' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
@@ -224,11 +225,39 @@
   .seg button svg{ width:14px; height:14px; }
   .sheet-foot{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
   .sheet-foot label{ display:flex; align-items:center; gap:7px; font-size:.85rem; cursor:pointer; }
-  .sheet-foot .acts{ display:flex; gap:8px; }
+  .sheet-foot .acts{ display:flex; gap:8px; flex-wrap:wrap; }
   .btn{ border-radius:9px; padding:8px 14px; font-size:.84rem; font-weight:600; cursor:pointer; border:1px solid var(--line); background:var(--surface); }
   .btn.primary{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
   .btn.danger{ color:var(--warn); }
   .btn.quiet{ border-color:transparent; color:var(--ink-dim); font-weight:500; }
+
+  /* Header tools: theme + shortcuts */
+  .top-right{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .iconbtn{ display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 10px; border:1px solid var(--line); background:var(--surface); border-radius:10px; color:var(--ink-dim); font-size:.8rem; font-weight:500; cursor:pointer; }
+  .iconbtn:hover{ color:var(--ink); border-color:var(--line-strong); }
+  .iconbtn svg{ width:16px; height:16px; flex:none; }
+
+  /* Keyboard focus, selection, clipboard */
+  .cell:focus, .lv-group:focus, .gcard:focus{ outline:none; }
+  .cell:focus-visible, .lv-group:focus-visible, .gcard:focus-visible,
+  .has-clip .cell:focus, .has-clip .lv-group:focus, .has-clip .gcard:focus{ outline:2px solid var(--accent); outline-offset:-2px; }
+  .chip.selected, .step.selected{ background:var(--accent-soft); box-shadow:0 0 0 2px var(--accent); border-color:transparent; }
+  .chip.cut, .step.cut{ opacity:.45; border-style:dashed; }
+  .step.cut{ outline:1px dashed var(--line-strong); }
+  .paste{ align-self:flex-start; border:1px dashed var(--accent); background:var(--accent-soft); color:var(--accent); font-size:.74rem; font-weight:600; padding:3px 8px; border-radius:6px; cursor:pointer; }
+  .selbar{ position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:25; display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center; max-width:calc(100vw - 32px); background:var(--ink); color:var(--bg); border-radius:12px; padding:8px 8px 8px 14px; box-shadow:var(--shadow); font-size:.84rem; }
+  .selbar button{ border:none; background:rgba(255,255,255,.12); color:inherit; border-radius:8px; padding:6px 10px; font-size:.8rem; font-weight:600; cursor:pointer; }
+  :root[data-theme="dark"] .selbar button{ background:rgba(0,0,0,.12); }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .selbar button{ background:rgba(0,0,0,.12); } }
+  .selbar button:hover{ filter:brightness(1.2); }
+  .has-sel .toast, .has-clip .toast{ bottom:84px; }
+  kbd{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:.74rem; background:var(--surface-2); border:1px solid var(--line); border-bottom-width:2px; border-radius:5px; padding:1px 5px; color:var(--ink); white-space:nowrap; }
+  .help{ position:fixed; z-index:38; left:50%; top:50%; transform:translate(-50%,-50%); width:min(560px, calc(100vw - 32px)); max-height:calc(100vh - 32px); overflow-y:auto; background:var(--surface); border:1px solid var(--line-strong); border-radius:16px; box-shadow:var(--shadow); padding:20px; display:flex; flex-direction:column; gap:12px; }
+  .help h2{ margin:0; font-family:"Fraunces", Georgia, serif; font-size:1.3rem; font-weight:600; }
+  .help table{ border-collapse:collapse; width:100%; font-size:.84rem; }
+  .help td{ padding:6px 4px; border-bottom:1px solid var(--line); vertical-align:top; color:var(--ink-dim); }
+  .help td:first-child{ width:42%; }
+  .help p{ margin:0; font-size:.8rem; color:var(--ink-faint); }
 
   /* Storage setup */
   .setup{ position:fixed; z-index:38; left:50%; top:50%; transform:translate(-50%,-50%); width:min(460px, calc(100vw - 32px)); max-height:calc(100vh - 32px); overflow-y:auto; background:var(--surface); border:1px solid var(--line-strong); border-radius:16px; box-shadow:var(--shadow); padding:20px; display:flex; flex-direction:column; gap:10px; }
@@ -295,10 +324,14 @@
         <span class="wk num" id="weekNum"></span>
       </div>
     </div>
+    <div class="top-right">
+    <button type="button" class="iconbtn" id="themeBtn" aria-label="Theme"></button>
+    <button type="button" class="iconbtn" id="helpBtn" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><path d="M6.5 10h.01M10 10h.01M14 10h.01M17.5 10h.01M7.5 14h9"/></svg></button>
     <div class="views" role="group" aria-label="View">
       <button type="button" id="viewWeek" aria-pressed="true">Week</button>
       <button type="button" id="viewList" aria-pressed="false">List</button>
       <button type="button" id="viewGroups" aria-pressed="false">Groups</button>
+    </div>
     </div>
   </div>
 
@@ -355,6 +388,8 @@
   <div class="sheet-foot">
     <label><input type="checkbox" id="sheetImp"> Important</label>
     <div class="acts">
+      <button type="button" class="btn" id="sheetCut">Cut</button>
+      <button type="button" class="btn" id="sheetCopy">Copy</button>
       <button type="button" class="btn danger" id="sheetDelete">Delete</button>
       <button type="button" class="btn primary" id="sheetClose">Done</button>
     </div>
@@ -414,6 +449,17 @@
   </form>
 </div>
 <div class="toast" id="toast" role="status" hidden></div>
+<div class="selbar" id="selbar" role="region" aria-label="Selection" hidden>
+  <span id="selText"></span>
+  <span id="selActs"></span>
+</div>
+<div class="calscrim" id="helpScrim" hidden></div>
+<div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <h2 id="helpTitle">Keyboard shortcuts</h2>
+  <table id="helpTable"></table>
+  <p>Shortcuts don't fire while you're typing in a box. Undo covers adds, moves, ticks and deletes from this session.</p>
+  <div><button type="button" class="btn primary" id="helpClose">Close</button></div>
+</div>
 
 <script>
 (function(){
@@ -626,14 +672,14 @@
     if (backend === "github" || backend === "local") return docWrite(op, id, data, colName);
     if (db) {
       var col = db.collection(colName);
-      var p = op === "add" ? col.add(data) : op === "update" ? col.doc(id).update(data) : col.doc(id).delete();
+      var p = op === "add" ? col.add(data) : op === "set" ? col.doc(id).set(data) : op === "update" ? col.doc(id).update(data) : col.doc(id).delete();
       return p.catch(function(e){
         if (!quiet) toast(e && e.code === "quota_exceeded" ? "The list is full — delete some old tasks, then try again." : "That didn't save — check your connection and try again.");
         throw e;
       });
     }
     var arr = colName === "groups" ? rawGroups : raw;
-    if (op === "add") { var nid = "local-"+(++localId); arr.push({ id: nid, data: data }); normalize(); render(); return Promise.resolve({ id: nid }); }
+    if (op === "add" || op === "set") { var nid = op === "set" ? id : "local-"+(++localId); arr.push({ id: nid, data: data }); normalize(); render(); return Promise.resolve({ id: nid }); }
     var r = arr.filter(function(x){ return x.id === id; })[0];
     if (!r) return Promise.reject({ code:"not_found", message:"Nothing with that id." });
     if (op === "update") r.data = Object.assign({}, r.data, data);
@@ -667,8 +713,8 @@
 
   // ---------- render ----------
   function chip(t, showCat){
-    return '<div class="chip'+(t.done?" done":"")+'" draggable="true" data-id="'+esc(t.id)+'" style="--c:var(--cat-'+t.cat+')">' +
-      '<button type="button" class="check" data-act="toggle" aria-pressed="'+t.done+'" aria-label="'+(t.done?"Mark not done":"Mark done")+'">'+(t.done?"✓":"")+'</button>' +
+    return '<div class="chip'+(t.done?" done":"")+markCls(t.id)+'" draggable="true" data-id="'+esc(t.id)+'" style="--c:var(--cat-'+t.cat+')">' +
+      '<button type="button" class="check" data-act="toggle" tabindex="-1" aria-pressed="'+t.done+'" aria-label="'+(t.done?"Mark not done":"Mark done")+'">'+(t.done?"✓":"")+'</button>' +
       '<button type="button" class="chip-title" data-act="open">'+(t.priority==="high"?'<span class="imp" aria-label="Important">!</span>':"")+esc(t.title)+
       (t.notes ? '<span class="has-notes" aria-label="Has notes">≡</span>' : "")+
       (showCat ? '<span class="cattag"><span class="dot" style="--c:var(--cat-'+t.cat+')"></span>'+CAT[t.cat].label+'</span>' : "")+
@@ -676,9 +722,9 @@
     '</div>';
   }
   function cell(cat, date, cls, showCat, list){
-    return '<div class="cell '+cls+'" data-cat="'+cat+'" data-date="'+(date||"")+'">' +
+    return '<div class="cell '+cls+'" tabindex="-1" data-cat="'+cat+'" data-date="'+(date||"")+'">' +
       sortTasks(list).map(function(t){ return chip(t, showCat); }).join("") +
-      '<button type="button" class="add" data-act="add">+ Add</button></div>';
+      pasteBtn() + '<button type="button" class="add" data-act="add">+ Add</button></div>';
   }
   function miniBar(done, total){
     return '<span class="mini"><span class="bar"><i style="width:'+(total?Math.round(done/total*100):0)+'%"></i></span><span class="num">'+done+"/"+total+'</span></span>';
@@ -748,15 +794,20 @@
         if (a.priority !== b.priority) return a.priority === "high" ? -1 : 1;
         return a.createdAt < b.createdAt ? -1 : 1;
       });
-      return '<div class="lv-group"><h3><span class="dot" style="--c:var(--cat-'+c.id+')"></span>'+c.label+' <span class="num nudge">'+list.filter(function(t){ return t.done; }).length+'/'+list.length+'</span></h3>' +
+      return '<div class="lv-group" tabindex="-1" data-cat="'+c.id+'"><h3><span class="dot" style="--c:var(--cat-'+c.id+')"></span>'+c.label+' <span class="num nudge">'+list.filter(function(t){ return t.done; }).length+'/'+list.length+'</span></h3>' +
         (list.length ? list.map(function(t){
           var overdue = !t.done && t.date && t.date < TODAY_ISO;
           return '<div class="lv-row">'+chip(t,false)+'<span class="lv-when'+(overdue?" overdue":"")+'">'+(t.date ? fmtDM(fromIso(t.date)) : "Backlog")+'</span></div>';
-        }).join("") : '<span class="nudge">Nothing here</span>') + '</div>';
+        }).join("") : '<span class="nudge">Nothing here</span>') + pasteBtn() + '</div>';
     }).join("");
   }
 
   function render(){
+    var fk = focusKey();
+    selected = selected.filter(function(id){ return !!find(id); });
+    if (clip) { clip.ids = clip.ids.filter(function(id){ return !!find(id); }); if (!clip.ids.length) clip = null; }
+    document.body.classList.toggle("has-sel", selected.length > 0);
+    document.body.classList.toggle("has-clip", !!clip);
     renderHeader();
     document.getElementById("weekView").hidden = view !== "week";
     document.getElementById("listView").hidden = view !== "list";
@@ -770,6 +821,8 @@
     updateSuggest();
     if (openId !== null) renderSheet();
     if (!document.getElementById("cal").hidden) renderCal();
+    renderSelbar();
+    restoreFocus(fk);
   }
 
   // ---------- actions ----------
@@ -779,18 +832,53 @@
     el.textContent = msg; el.hidden = false;
     clearTimeout(toastTimer); toastTimer = setTimeout(function(){ el.hidden = true; }, 2400);
   }
+  function noop(){}
+  function createTask(p){
+    return (p.group ? Promise.resolve(p.group) : resolveGroup(p.groupToken)).then(function(gid){
+      p.group = gid;
+      return write("add", null, newTaskData(p));
+    }).then(function(ref){ return ref.id; });
+  }
   function addTask(p){
     if (!p.title) return;
     var label = placeLabel(p);
-    (p.group ? Promise.resolve(p.group) : resolveGroup(p.groupToken)).then(function(gid){
-      p.group = gid;
-      return write("add", null, newTaskData(p)).then(function(){ toast("Added to "+label.replace(" (new group)","")); });
-    }).catch(function(){});
+    createTask(p).then(function(id){
+      pushUndo("add \u201c"+p.title.slice(0,40)+"\u201d", function(){ write("delete", id).catch(noop); });
+      toast("Added to "+label.replace(" (new group)",""));
+    }).catch(noop);
+  }
+
+  // Undo: each entry knows how to reverse one user action (adds, moves, ticks, deletes, pastes).
+  var undoStack = [];
+  function rawOf(id){ var r = raw.filter(function(x){ return x.id === id; })[0]; return r ? JSON.parse(JSON.stringify(r.data)) : null; }
+  function pushUndo(label, fn){ undoStack.push({ label: label, fn: fn }); if (undoStack.length > 40) undoStack.shift(); }
+  function undo(){
+    var u = undoStack.pop();
+    if (!u) { toast("Nothing to undo"); return; }
+    u.fn(); toast("Undone: "+u.label);
+  }
+  function updateTasks(changes, label){
+    var before = changes.map(function(c){
+      var d = rawOf(c.id) || {}, prev = {};
+      Object.keys(c.patch).forEach(function(k){ prev[k] = k in d ? d[k] : null; });
+      return { id: c.id, prev: prev };
+    });
+    pushUndo(label, function(){ before.forEach(function(b){ write("update", b.id, b.prev).catch(noop); }); });
+    return Promise.all(changes.map(function(c){ return write("update", c.id, c.patch); }));
+  }
+  function deleteTasks(ids){
+    var saved = ids.map(function(id){ return { id: id, data: rawOf(id) }; }).filter(function(x){ return x.data; });
+    if (!saved.length) return;
+    var label = saved.length === 1 ? "delete \u201c"+String(saved[0].data.title).slice(0,40)+"\u201d" : "delete "+saved.length+" tasks";
+    pushUndo(label, function(){ saved.forEach(function(x){ write("set", x.id, x.data).catch(noop); }); });
+    Promise.all(saved.map(function(x){ return write("delete", x.id); })).then(function(){
+      toast((saved.length === 1 ? "Task deleted" : saved.length+" tasks deleted")+" — "+MOD+"Z to undo");
+    }, noop);
   }
   function toggle(id){
     var t = find(id); if (!t) return;
     var nowDone = !t.done;
-    write("update", id, { done: nowDone, completedAt: nowDone ? new Date().toISOString() : null }).then(function(){
+    updateTasks([{ id: id, patch: { done: nowDone, completedAt: nowDone ? new Date().toISOString() : null } }], (nowDone ? "tick \u201c" : "untick \u201c")+t.title.slice(0,40)+"\u201d").then(function(){
       if (!nowDone) return;
       var dates = weekDates();
       var left = tasks.filter(function(x){ return x.date && dates.indexOf(x.date) !== -1 && !x.done; }).length;
@@ -798,7 +886,8 @@
     }, function(){});
   }
   function move(id, cat, date){
-    write("update", id, { tab: cat, due: date || "" }).then(function(){
+    var t = find(id);
+    updateTasks([{ id: id, patch: { tab: cat, due: date || "" } }], "move \u201c"+(t ? t.title.slice(0,40) : "task")+"\u201d").then(function(){
       toast("Moved to "+placeLabel({ cat: cat, date: date, priority: "med" }));
     }, function(){});
   }
@@ -838,7 +927,11 @@
     var a = act.dataset.act;
     var chipEl = act.closest("[data-id]");
     if (a === "toggle") { toggle(chipEl.dataset.id); return; }
-    if (a === "open") { openSheet(chipEl.dataset.id); return; }
+    if (a === "open") {
+      if (e.ctrlKey || e.metaKey || e.shiftKey) { toggleSel(chipEl.dataset.id); return; }
+      openSheet(chipEl.dataset.id); return;
+    }
+    if (a === "paste") { pasteInto(targetFromEl(act), act); return; }
     if (a === "up" || a === "down") { moveStep(chipEl.dataset.id, a === "up" ? -1 : 1); return; }
     if (a === "add") {
       var c = act.closest(".cell");
@@ -946,7 +1039,7 @@
   function groupCard(g, st){
     var gid = esc(g.id);
     var left = st.total - st.done;
-    var h = '<article class="gcard'+(st.finished?" finished":"")+'" data-group="'+gid+'">';
+    var h = '<article class="gcard'+(st.finished?" finished":"")+'" tabindex="-1" data-group="'+gid+'">';
     h += '<div class="gcard-head">' +
       (renamingId === g.id
         ? '<input class="grename" id="grename-'+gid+'" value="'+esc(g.name)+'" maxlength="80" aria-label="Group name">'
@@ -958,9 +1051,9 @@
       h += '<ol class="steps">' + st.steps.map(function(t,i){
         var isNext = st.next && st.next.id === t.id;
         var overdue = !t.done && t.date && t.date < TODAY_ISO;
-        return '<li class="step'+(t.done?" done":"")+(isNext?" next":"")+'" data-id="'+esc(t.id)+'" style="--c:var(--cat-'+t.cat+')">' +
+        return '<li class="step'+(t.done?" done":"")+(isNext?" next":"")+markCls(t.id)+'" data-id="'+esc(t.id)+'" style="--c:var(--cat-'+t.cat+')">' +
           '<span class="step-n num">'+(i+1)+'</span>' +
-          '<button type="button" class="check" data-act="toggle" aria-pressed="'+t.done+'" aria-label="'+(t.done?"Mark not done":"Mark done")+'">'+(t.done?"✓":"")+'</button>' +
+          '<button type="button" class="check" data-act="toggle" tabindex="-1" aria-pressed="'+t.done+'" aria-label="'+(t.done?"Mark not done":"Mark done")+'">'+(t.done?"✓":"")+'</button>' +
           '<button type="button" class="chip-title" data-act="open">'+(t.priority==="high"?'<span class="imp" aria-label="Important">!</span>':"")+esc(t.title)+(isNext?'<span class="nextpill">Next</span>':"")+'</button>' +
           (t.date ? '<span class="step-when'+(overdue?" overdue":"")+'">'+fmtDM(fromIso(t.date))+'</span>' : "") +
           '<span class="step-move"><button type="button" data-act="up" aria-label="Move step up"'+(i===0?" disabled":"")+'>↑</button>' +
@@ -969,6 +1062,7 @@
     } else {
       h += '<p class="gempty">Add the first step below — then the next, in the order you\'ll do them.</p>';
     }
+    h += pasteBtn();
     h += '<form class="gadd" data-group="'+gid+'" autocomplete="off"><input type="text" id="gadd-'+gid+'" maxlength="160" placeholder="Add a step (dates work: fri, 5 dec)" aria-label="Add a step to '+esc(g.name)+'"><button type="submit">Add</button></form>';
     h += '<div class="gfoot"><button type="button" data-gact="rename">Rename</button>' +
       '<button type="button" data-gact="delete"'+(confirmDeleteId===g.id?' class="confirm"':'')+'>'+(confirmDeleteId===g.id?"Confirm delete (steps stay as tasks)":"Delete group")+'</button></div>';
@@ -1166,26 +1260,33 @@
   });
   document.getElementById("sheetCats").addEventListener("click", function(e){
     var b = e.target.closest("button"); if (!b) return;
-    var t = find(openId); if (t && t.cat !== b.dataset.cat) write("update", t.id, { tab: b.dataset.cat }).catch(function(){});
+    var t = find(openId); if (t && t.cat !== b.dataset.cat) updateTasks([{ id: t.id, patch: { tab: b.dataset.cat } }], "change category").catch(noop);
   });
   document.getElementById("sheetDays").addEventListener("click", function(e){
     var b = e.target.closest("button"); if (!b) return;
     var t = find(openId); if (!t) return;
     if (b.dataset.pick) {
       openCal({ heading:"Move to date", value: t.date, allowClear: true, onPick: function(v){
-        var cur = find(openId); if (cur) write("update", cur.id, { due: v || "" }).catch(function(){});
+        var cur = find(openId); if (cur) updateTasks([{ id: cur.id, patch: { due: v || "" } }], "change day").catch(noop);
       }});
       return;
     }
     var date = b.dataset.date || null;
-    if (t.date !== date) write("update", t.id, { due: date || "" }).catch(function(){});
+    if (t.date !== date) updateTasks([{ id: t.id, patch: { due: date || "" } }], "change day").catch(noop);
   });
   document.getElementById("sheetImp").addEventListener("change", function(e){
     var t = find(openId); if (t) write("update", t.id, { priority: e.target.checked ? "high" : "med" }).catch(function(){});
   });
   document.getElementById("sheetDelete").addEventListener("click", function(){
-    var id = openId; hideSheet();
-    write("delete", id).then(function(){ toast("Task deleted"); }, function(){});
+    var id = openId; hideSheet(); render();
+    deleteTasks([id]);
+  });
+  ["Cut","Copy"].forEach(function(which){
+    document.getElementById("sheet"+which).addEventListener("click", function(){
+      var id = openId; closeSheet();
+      startClip(which.toLowerCase(), [id]);
+      if (navigator.clipboard && clip) navigator.clipboard.writeText(clip.text).then(function(){ if (clip) clip.viaSystem = true; }, noop);
+    });
   });
   document.getElementById("sheetClose").addEventListener("click", closeSheet);
   document.getElementById("scrim").addEventListener("click", closeSheet);
@@ -1242,8 +1343,395 @@
 
   document.addEventListener("keydown", function(e){
     if (e.key !== "Escape") return;
-    if (!document.getElementById("cal").hidden) { closeCal(); return; }
-    if (openId !== null) closeSheet();
+    if (!document.getElementById("cal").hidden) { e.preventDefault(); closeCal(); return; }
+    if (openId !== null) { e.preventDefault(); closeSheet(); }
+  });
+
+  // ---------- theme: Auto (follow the device) → Light → Dark ----------
+  var THEME_KEY = "waypoint.theme";
+  var THEME_ICONS = {
+    auto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>',
+    light: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>',
+    dark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>'
+  };
+  var THEME_LABEL = { auto: "Auto", light: "Light", dark: "Dark" };
+  var theme = "auto";
+  try { var savedTheme = localStorage.getItem(THEME_KEY); if (savedTheme === "light" || savedTheme === "dark") theme = savedTheme; } catch (e) {}
+  function applyTheme(){
+    if (theme === "auto") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", theme);
+    var btn = document.getElementById("themeBtn");
+    btn.innerHTML = THEME_ICONS[theme] + '<span>' + THEME_LABEL[theme] + '</span>';
+    btn.title = "Theme: " + THEME_LABEL[theme] + (theme === "auto" ? " (follows your device)" : "") + " — click to change";
+    var dark = theme === "dark" || (theme === "auto" && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.querySelector('meta[name="theme-color"]').setAttribute("content", dark ? "#0F151D" : "#23588F");
+  }
+  document.getElementById("themeBtn").addEventListener("click", function(){
+    theme = theme === "auto" ? "light" : theme === "light" ? "dark" : "auto";
+    try { if (theme === "auto") localStorage.removeItem(THEME_KEY); else localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+    applyTheme();
+  });
+  if (window.matchMedia) { try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme); } catch (e) {} }
+  applyTheme();
+
+  // ---------- selection + clipboard ----------
+  // selected: tasks picked with x / Ctrl-click / Shift+arrows.
+  // clip: what was cut or copied. Pasting onto a calendar cell, a category list or a group card moves (cut)
+  // or duplicates (copy) those tasks there. Text from outside the app pastes as new tasks, one per line.
+  var MOD = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent) ? "⌘" : "Ctrl+";
+  var selected = [];
+  var clip = null;            // { mode: "cut"|"copy", ids, text, viaSystem }
+  var clipFresh = false;      // the copy/cut event right after the keypress may write to the system clipboard
+  var pendingPaste = null;
+
+  function markCls(id){
+    return (selected.indexOf(id) !== -1 ? " selected" : "") + (clip && clip.mode === "cut" && clip.ids.indexOf(id) !== -1 ? " cut" : "");
+  }
+  function pasteBtn(){ return clip ? '<button type="button" class="paste" data-act="paste">Paste here</button>' : ""; }
+  function plural(n, word){ return n + " " + word + (n === 1 ? "" : "s"); }
+  function toggleSel(id){
+    var i = selected.indexOf(id);
+    if (i === -1) selected.push(id); else selected.splice(i, 1);
+    render();
+  }
+  function addSel(id){ if (id && selected.indexOf(id) === -1) selected.push(id); }
+  function focusedTaskId(){
+    var a = document.activeElement;
+    if (!a || !a.closest || !a.closest("#grid,#agenda,#listGroups,#groupsHost")) return null;
+    var it = a.closest("[data-id]");
+    return it && (a.classList.contains("chip-title") || a.classList.contains("check")) ? it.dataset.id : null;
+  }
+  function opIds(){
+    if (selected.length) return selected.slice();
+    var id = focusedTaskId();
+    return id ? [id] : [];
+  }
+  function startClip(mode, ids){
+    ids = ids.filter(function(id){ return !!find(id); });
+    if (!ids.length) return false;
+    clip = { mode: mode, ids: ids, text: ids.map(function(id){ return find(id).title; }).join("\n"), viaSystem: false };
+    selected = [];
+    render();
+    toast((mode === "cut" ? "Cut " : "Copied ") + plural(ids.length, "task") + " — pick a spot and press " + MOD + "V, or use Paste here");
+    return true;
+  }
+  function clearMarks(){ if (selected.length || clip) { selected = []; clip = null; render(); } }
+
+  function targetFromEl(el){
+    if (!el || !el.closest) return null;
+    var c = el.closest(".cell");
+    if (c) {
+      var inAgenda = !!c.closest("#agenda");
+      return { kind: inAgenda ? "day" : "cell", cat: c.dataset.cat, date: c.dataset.date || null };
+    }
+    var lv = el.closest(".lv-group"); if (lv) return { kind: "cat", cat: lv.dataset.cat };
+    var gc = el.closest(".gcard[data-group]"); if (gc && GROUP[gc.dataset.group]) return { kind: "group", group: gc.dataset.group };
+    return null;
+  }
+  function targetLabel(t){
+    if (t.kind === "cell") return placeLabel({ cat: t.cat, date: t.date, priority: "med" });
+    if (t.kind === "day") return t.date ? fmtDay(fromIso(t.date)) : "Backlog";
+    if (t.kind === "cat") return CAT[t.cat].label;
+    return "@" + GROUP[t.group].name;
+  }
+  function patchFor(t){
+    if (t.kind === "cell") return { tab: t.cat, due: t.date || "" };
+    if (t.kind === "day") return { due: t.date || "" };
+    if (t.kind === "cat") return { tab: t.cat };
+    return { group: t.group, step: nextStep() };
+  }
+  function pasteInto(target, srcEl, text){
+    if (!target) { toast("Click a calendar cell, a list or a group card first, then paste"); return; }
+    if (text && text.trim() && !(clip && (!clip.viaSystem || text === clip.text))) { pasteText(text, target); return; }
+    if (!clip) return;
+    var ids = clip.ids.filter(function(id){ return !!find(id); });
+    if (!ids.length) { clip = null; render(); return; }
+    var where = targetLabel(target);
+    if (clip.mode === "cut") {
+      clip = null;
+      updateTasks(ids.map(function(id){ return { id: id, patch: patchFor(target) }; }), "move " + plural(ids.length, "task"))
+        .then(function(){ toast("Moved " + plural(ids.length, "task") + " to " + where); }, noop);
+      return;
+    }
+    // Copy: fresh, unticked duplicates. They join a group only when pasted onto a group.
+    var made = [];
+    ids.reduce(function(chain, id){
+      return chain.then(function(){
+        var d = Object.assign(rawOf(id) || {}, { group: "", step: null }, patchFor(target), { done: false, completedAt: null, createdAt: new Date().toISOString() });
+        return write("add", null, d).then(function(ref){ made.push(ref.id); });
+      });
+    }, Promise.resolve()).then(function(){
+      pushUndo("paste " + plural(made.length, "copy"), function(){ made.forEach(function(id){ write("delete", id).catch(noop); }); });
+      toast("Pasted " + plural(made.length, "copy") + " into " + where);
+    }, noop);
+  }
+  function pasteText(text, target){
+    var lines = text.split(/\r?\n/).map(function(l){
+      return l.replace(/^\s*(?:[-*+•▪◦·–]|\d+[.)]|\[[ xX]?\])\s+/, "").trim();
+    }).filter(Boolean).slice(0, 100);
+    if (!lines.length) return;
+    var defaults = target.kind === "cell" ? { cat: target.cat, date: target.date }
+      : target.kind === "day" ? { cat: "general", date: target.date }
+      : target.kind === "cat" ? { cat: target.cat, date: null }
+      : { cat: groupCat(groupStats(GROUP[target.group])), date: null };
+    var made = [];
+    lines.reduce(function(chain, line){
+      return chain.then(function(){
+        var p = parse(line, defaults);
+        if (!p.title) return;
+        if (target.kind === "group") { p.group = target.group; p.groupToken = null; } else inheritGroupCat(p);
+        return createTask(p).then(function(id){ made.push(id); });
+      });
+    }, Promise.resolve()).then(function(){
+      if (!made.length) return;
+      pushUndo("paste " + plural(made.length, "task"), function(){ made.forEach(function(id){ write("delete", id).catch(noop); }); });
+      toast("Added " + plural(made.length, "task") + " to " + targetLabel(target));
+    }, noop);
+  }
+
+  function renderSelbar(){
+    var bar = document.getElementById("selbar");
+    var text = document.getElementById("selText"), acts = document.getElementById("selActs");
+    if (selected.length) {
+      text.textContent = plural(selected.length, "task") + " selected";
+      acts.innerHTML = '<button type="button" data-sel="cut">Cut</button><button type="button" data-sel="copy">Copy</button><button type="button" data-sel="delete">Delete</button><button type="button" data-sel="clear" aria-label="Clear selection">✕</button>';
+    } else if (clip) {
+      text.textContent = plural(clip.ids.length, "task") + (clip.mode === "cut" ? " cut" : " copied") + " — Paste here, or " + MOD + "V on a cell";
+      acts.innerHTML = '<button type="button" data-sel="clear">Cancel</button>';
+    }
+    bar.hidden = !selected.length && !clip;
+  }
+  document.getElementById("selbar").addEventListener("click", function(e){
+    var b = e.target.closest("[data-sel]"); if (!b) return;
+    var a = b.dataset.sel;
+    if (a === "cut" || a === "copy") {
+      startClip(a, selected.slice());
+      if (navigator.clipboard && clip) navigator.clipboard.writeText(clip.text).then(function(){ if (clip) clip.viaSystem = true; }, noop);
+    }
+    else if (a === "delete") { var ids = selected.slice(); selected = []; deleteTasks(ids); render(); }
+    else clearMarks();
+  });
+
+  // ---------- keyboard focus: keep it across re-renders, move it with arrows ----------
+  function visible(el){ return !!el && el.offsetParent !== null; }
+  function cssq(v){ return window.CSS && CSS.escape ? CSS.escape(v) : String(v).replace(/["\\]/g, "\\$&"); }
+  function hostOf(el){ return el && el.closest ? el.closest("#grid,#agenda,#listGroups,#groupsHost") : null; }
+  function containerKey(el){
+    var c = el.closest(".cell"); if (c) return { cell: [c.dataset.cat, c.dataset.date] };
+    var lv = el.closest(".lv-group"); if (lv) return { lv: lv.dataset.cat };
+    var gc = el.closest(".gcard[data-group]"); if (gc) return { gc: gc.dataset.group };
+    return {};
+  }
+  function keyOfEl(el){
+    var h = hostOf(el); if (!h) return null;
+    var k = containerKey(el); k.host = h.id;
+    if (el.classList.contains("chip-title") || el.classList.contains("check")) k.task = el.closest("[data-id]").dataset.id;
+    return k;
+  }
+  function focusKey(){ var a = document.activeElement; return a && a !== document.body ? keyOfEl(a) : null; }
+  function elOfKey(k){
+    var h = k && document.getElementById(k.host);
+    if (!h || !visible(h)) return null;
+    if (k.task) { var t = h.querySelector('[data-id="' + cssq(k.task) + '"] .chip-title'); if (t) return t; }
+    if (k.cell) return h.querySelector('.cell[data-cat="' + cssq(k.cell[0]) + '"][data-date="' + cssq(k.cell[1]) + '"]');
+    if (k.lv) return h.querySelector('.lv-group[data-cat="' + cssq(k.lv) + '"]');
+    if (k.gc) return h.querySelector('.gcard[data-group="' + cssq(k.gc) + '"]');
+    return null;
+  }
+  function restoreFocus(k){
+    var el = elOfKey(k);
+    if (el && document.activeElement !== el) el.focus({ preventScroll: true });
+  }
+  function focusEl(el){
+    if (!el) return;
+    el.focus({ preventScroll: true });
+    if (el.scrollIntoView) el.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }
+  function currentHost(){
+    if (view === "week") { var g = document.getElementById("grid"); return visible(g) ? g : document.getElementById("agenda"); }
+    return document.getElementById(view === "list" ? "listGroups" : "groupsHost");
+  }
+  function focusStart(){
+    var h = currentHost(); if (!h) return;
+    var el = h.id === "grid"
+      ? (h.querySelector('.cell[data-cat="work"][data-date="' + TODAY_ISO + '"]') || h.querySelector(".cell"))
+      : h.querySelector(".cell, .lv-group, .gcard[data-group]");
+    focusEl(el);
+  }
+  function seqOfCells(cells){
+    var seq = [];
+    cells.forEach(function(c){ seq.push(c); c.querySelectorAll(".chip-title").forEach(function(t){ seq.push(t); }); });
+    return seq;
+  }
+  function stepIn(seq, a, dir){
+    var i = seq.indexOf(a);
+    if (i < 0) return seq[0] || null;
+    return seq[i + (dir === "down" ? 1 : -1)] || null;
+  }
+  function navMove(dir, extend){
+    var a = document.activeElement, h = hostOf(a);
+    if (!h || !visible(h)) { focusStart(); return; }
+    if (a.classList.contains("check")) a = a.parentNode.querySelector(".chip-title");
+    var from = a.classList.contains("chip-title") ? a.closest("[data-id]").dataset.id : null;
+    var vertical = dir === "up" || dir === "down", target = null;
+    if (h.id === "grid") {
+      var c = a.closest(".cell"); if (!c) return;
+      if (vertical) target = stepIn(seqOfCells(Array.prototype.slice.call(h.querySelectorAll('.cell[data-date="' + cssq(c.dataset.date) + '"]'))), a, dir);
+      else {
+        var cols = [""].concat(weekDates()), i = cols.indexOf(c.dataset.date) + (dir === "left" ? -1 : 1);
+        if (i >= 0 && i < cols.length) target = h.querySelector('.cell[data-cat="' + cssq(c.dataset.cat) + '"][data-date="' + cols[i] + '"]');
+      }
+    } else if (h.id === "agenda") {
+      if (vertical) target = stepIn(seqOfCells(Array.prototype.slice.call(h.querySelectorAll(".cell"))), a, dir);
+    } else {
+      var sel = h.id === "listGroups" ? ".lv-group" : ".gcard[data-group]";
+      var conts = Array.prototype.filter.call(h.querySelectorAll(sel), visible), cont = a.closest(sel);
+      if (!cont) return;
+      if (vertical) target = stepIn([cont].concat(Array.prototype.slice.call(cont.querySelectorAll(".chip-title"))), a, dir);
+      else { var j = conts.indexOf(cont) + (dir === "left" ? -1 : 1); if (j >= 0 && j < conts.length) target = conts[j]; }
+    }
+    if (!target) return;
+    if (extend && from) {
+      var to = target.classList.contains("chip-title") ? target.closest("[data-id]").dataset.id : null;
+      addSel(from); addSel(to);
+      var k = keyOfEl(target);
+      render(); focusEl(elOfKey(k));
+      return;
+    }
+    focusEl(target);
+  }
+
+  // ---------- shortcuts help ----------
+  function openHelp(){
+    var rows = [
+      ["↑ ↓ ← →", "Move between tasks and calendar cells (← → also jumps between lists and group cards)"],
+      ["Space", "Tick / untick the task"],
+      ["Enter", "Edit the task · on an empty cell, add a task there"],
+      ["x  ·  " + MOD + "click", "Select a task (pick several)"],
+      ["Shift + ↑ ↓", "Select while moving"],
+      [MOD + "A", "Select everything in this cell, list or group"],
+      [MOD + "X  ·  " + MOD + "C", "Cut / copy the selected (or focused) tasks"],
+      [MOD + "V", "Paste onto the focused cell, list or group card. Text copied from elsewhere becomes tasks, one per line"],
+      ["Delete", "Delete the selected (or focused) tasks"],
+      [MOD + "Z", "Undo"],
+      ["n  or  /", "Add a task"],
+      ["1  2  3", "Week · List · Groups"],
+      ["t  ·  [  ]", "This week · previous / next week"],
+      ["Esc", "Clear the selection or clipboard"],
+      ["?", "Show this list"]
+    ];
+    // Keys are space-separated; "·", "or" and "+" are shown as plain text, everything else as a key cap.
+    document.getElementById("helpTable").innerHTML = rows.map(function(r){
+      var keys = r[0].split(/\s+/).map(function(tok){
+        return tok === "·" || tok === "or" || tok === "+" ? '<span>' + esc(tok) + '</span>' : '<kbd>' + esc(tok) + '</kbd>';
+      }).join(" ");
+      return "<tr><td>" + keys + "</td><td>" + esc(r[1]) + "</td></tr>";
+    }).join("");
+    document.getElementById("helpScrim").hidden = false;
+    document.getElementById("help").hidden = false;
+    document.getElementById("helpClose").focus();
+  }
+  function closeHelp(){ document.getElementById("helpScrim").hidden = true; document.getElementById("help").hidden = true; }
+  document.getElementById("helpBtn").addEventListener("click", openHelp);
+  document.getElementById("helpClose").addEventListener("click", closeHelp);
+  document.getElementById("helpScrim").addEventListener("click", closeHelp);
+  document.getElementById("help").addEventListener("keydown", function(e){ if (e.key === "Escape") { e.stopPropagation(); closeHelp(); } });
+
+  // ---------- keyboard ----------
+  function typing(){
+    var a = document.activeElement;
+    return !!a && (a.tagName === "INPUT" || a.tagName === "TEXTAREA" || a.tagName === "SELECT" || a.isContentEditable);
+  }
+  function dialogOpen(){
+    return ["sheet","cal","setup","help"].some(function(id){ return !document.getElementById(id).hidden; });
+  }
+  var swallowSpaceUp = false;
+  document.addEventListener("keydown", function(e){
+    if (e.defaultPrevented || typing() || dialogOpen()) return;
+    var k = e.key, mod = e.metaKey || e.ctrlKey;
+    if (mod && !e.altKey) {
+      var kl = k.toLowerCase();
+      if (kl === "z" && !e.shiftKey) { e.preventDefault(); undo(); return; }
+      if (kl === "x" || kl === "c") {
+        // Let the browser's own copy/cut event follow, so the titles also land on the system clipboard.
+        if (startClip(kl === "x" ? "cut" : "copy", opIds())) clipFresh = true;
+        return;
+      }
+      if (kl === "v") {
+        var t = targetFromEl(document.activeElement);
+        pendingPaste = t || "none";
+        setTimeout(function(){
+          // Browsers that don't send a paste event to a non-text element: fall back to the in-app clipboard.
+          if (pendingPaste && pendingPaste !== "none") { var tt = pendingPaste; pendingPaste = null; if (clip) pasteInto(tt); }
+          else pendingPaste = null;
+        }, 80);
+        return;
+      }
+      if (kl === "a") {
+        var a = document.activeElement, cont = a && a.closest && hostOf(a) ? a.closest(".cell, .lv-group, .gcard[data-group]") : null;
+        if (!cont) return;
+        e.preventDefault();
+        selected = Array.prototype.map.call(cont.querySelectorAll("[data-id]"), function(x){ return x.dataset.id; });
+        var key = keyOfEl(a); render(); restoreFocus(key);
+        return;
+      }
+      return;
+    }
+    if (e.altKey) return;
+    var id;
+    switch (k) {
+      case "ArrowUp": case "ArrowDown": case "ArrowLeft": case "ArrowRight":
+        e.preventDefault(); navMove(k.slice(5).toLowerCase(), e.shiftKey); return;
+      case "Escape":
+        if (selected.length || clip) { e.preventDefault(); clearMarks(); }
+        return;
+      case " ":
+        id = focusedTaskId();
+        if (id) { e.preventDefault(); swallowSpaceUp = true; toggle(id); }
+        return;
+      case "x":
+        id = focusedTaskId();
+        if (id) { e.preventDefault(); toggleSel(id); }
+        return;
+      case "Delete": case "Backspace":
+        var ids = opIds();
+        if (ids.length) { e.preventDefault(); selected = []; deleteTasks(ids); render(); }
+        return;
+      case "Enter":
+        var el = document.activeElement;
+        if (el && el.classList && el.classList.contains("cell")) { e.preventDefault(); var addBtn = el.querySelector(".add"); if (addBtn) addBtn.click(); }
+        else if (el && el.classList && el.classList.contains("gcard")) { e.preventDefault(); var gi = el.querySelector(".gadd input"); if (gi) gi.focus(); }
+        return;
+      case "n": case "/": e.preventDefault(); qi.focus(); return;
+      case "1": setView("week"); return;
+      case "2": setView("list"); return;
+      case "3": setView("groups"); return;
+      case "t": weekStart = THIS_MON; setView("week"); focusStart(); return;
+      case "[": weekStart = addDays(weekStart, -7); render(); return;
+      case "]": weekStart = addDays(weekStart, 7); render(); return;
+      case "?": e.preventDefault(); openHelp(); return;
+    }
+  });
+  document.addEventListener("keyup", function(e){
+    // Space was used to tick a task; stop the button underneath from also opening the editor.
+    if (e.key === " " && swallowSpaceUp) { e.preventDefault(); swallowSpaceUp = false; }
+  });
+  function onCopyCut(e){
+    if (!clipFresh || !clip || typing()) return;
+    clipFresh = false;
+    e.preventDefault();
+    if (e.clipboardData) { e.clipboardData.setData("text/plain", clip.text); clip.viaSystem = true; }
+  }
+  document.addEventListener("copy", onCopyCut);
+  document.addEventListener("cut", onCopyCut);
+  document.addEventListener("paste", function(e){
+    if (typing() || dialogOpen()) return;
+    var target = pendingPaste && pendingPaste !== "none" ? pendingPaste : targetFromEl(document.activeElement);
+    pendingPaste = null;
+    var text = e.clipboardData ? e.clipboardData.getData("text/plain") : "";
+    if (!target && !clip && !text.trim()) return;
+    e.preventDefault();
+    pasteInto(target, null, text);
   });
 
   // Week nav + views
@@ -1438,7 +1926,7 @@
     d.tasks = d.tasks || {}; d.groups = d.groups || {};
     ops.forEach(function(o){
       var c = d[o.col]; if (!c) return;
-      if (o.op === "add") c[o.id] = o.data;
+      if (o.op === "add" || o.op === "set") c[o.id] = o.data;
       else if (o.op === "update") { if (c[o.id]) c[o.id] = Object.assign({}, c[o.id], o.data); }
       else if (o.op === "delete") delete c[o.id];
     });
@@ -1453,7 +1941,7 @@
   function newId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
   function docWrite(op, id, data, col){
     var cur = currentDoc();
-    if (op !== "add" && !(cur[col] && cur[col][id])) return Promise.reject({ code:"not_found", message:"Nothing with that id." });
+    if (op !== "add" && op !== "set" && !(cur[col] && cur[col][id])) return Promise.reject({ code:"not_found", message:"Nothing with that id." });
     var o = { op: op, col: col, id: op === "add" ? newId() : id, data: data };
     if (backend === "github") { pending.push(o); showDoc(currentDoc()); scheduleFlush(); }
     else { localDoc = applyOps(localDoc, [o]); saveLocal(); showDoc(localDoc); }
@@ -1527,6 +2015,7 @@
     var title = o.data && (o.data.title || o.data.name);
     if (o.op === "add") return "Waypoint: add " + what + (title ? " \"" + String(title).slice(0,60) + "\"" : "");
     if (o.op === "delete") return "Waypoint: delete " + what;
+    if (o.op === "set") return "Waypoint: restore " + what;
     if (o.data && "done" in o.data) return "Waypoint: " + (o.data.done ? "complete" : "reopen") + " task";
     return "Waypoint: update " + what;
   }

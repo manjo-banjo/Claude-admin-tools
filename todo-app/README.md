@@ -55,6 +55,19 @@ or disconnect later.
   category, day, importance and notes.
 - **Progress** — week progress bar, per-day done/total, done today, day streak,
   backlog size.
+- **Theme** — button in the header cycles Auto (follows the device) → Light → Dark;
+  remembered per browser.
+- **Keyboard and clipboard** (press `?` in the app for the full list):
+  - arrow keys move between tasks and calendar cells (← → also jump between
+    lists and group cards); Space ticks, Enter edits, Delete deletes, `Ctrl/⌘+Z` undoes
+  - `x`, `Ctrl/⌘`+click or Shift+arrows select several; `Ctrl/⌘+A` selects a whole cell, list or group
+  - `Ctrl/⌘+X` / `C`, then `Ctrl/⌘+V` on a cell, list or group card moves / copies
+    tasks there (into a group = appended as its next steps, in order)
+  - text copied from elsewhere pastes as new tasks, one per line (bullets and
+    numbering stripped; date / `#category` shortcuts still work)
+  - with a mouse or on a phone: Cut / Copy in the task editor, then the
+    **Paste here** buttons
+  - `n` add a task · `1 2 3` Week / List / Groups · `t` this week · `[ ]` previous / next week
 - **Updating with Claude** — ask Claude (in a session with the data repo
   attached) to add, move or complete tasks; it edits `waypoint.json` and the
   app picks the change up within ~30 seconds. (The in-app 💬 chat button only
