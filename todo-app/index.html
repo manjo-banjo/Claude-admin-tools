@@ -51,7 +51,7 @@
   button, input, textarea{ font-family:inherit; color:inherit; }
   .num{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums; }
   :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
-  .page{ max-width:1320px; margin:0 auto; display:flex; flex-direction:column; gap:16px; }
+  .page{ max-width:1480px; margin:0 auto; display:flex; flex-direction:column; gap:16px; }
 
   /* Header */
   .top{ display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:14px 24px; }
@@ -97,7 +97,7 @@
 
   /* Week grid */
   .grid-wrap{ overflow-x:auto; border:1px solid var(--line-strong); border-radius:14px; background:var(--surface); }
-  .grid{ display:grid; grid-template-columns:96px minmax(170px,1.35fr) repeat(7, minmax(118px,1fr)); min-width:1150px; }
+  .grid{ display:grid; grid-template-columns:112px minmax(165px,1.3fr) repeat(7, minmax(108px,1fr)) minmax(165px,1.2fr); min-width:1330px; }
   .grid > div{ border-right:1px solid var(--line); border-bottom:1px solid var(--line); }
   .grid > .lastcol{ border-right:none; }
   .grid > .lastrow{ border-bottom:none; }
@@ -110,13 +110,32 @@
   .mini{ display:flex; align-items:center; gap:6px; font-size:.68rem; color:var(--ink-faint); }
   .mini .bar{ flex:1; height:4px; border:none; }
   .backlog-head .title{ font-family:"Fraunces", Georgia, serif; font-size:1.25rem; font-weight:500; line-height:1.1; }
-  .rowhead{ padding:10px; display:flex; flex-direction:column; gap:4px; }
-  .rowhead .name{ display:flex; align-items:center; gap:7px; font-weight:600; font-size:.86rem; }
+  .rowhead{ padding:8px 26px 8px 6px; display:flex; flex-direction:column; gap:4px; position:sticky; }
+  .rowtoggle{ display:flex; align-items:center; gap:6px; border:none; background:none; padding:2px 2px; margin:0; font-weight:600; font-size:.86rem; color:var(--ink); cursor:pointer; text-align:left; border-radius:6px; }
+  .rowtoggle:hover{ background:var(--surface-2); }
+  .rowtoggle .chev{ display:inline-block; width:10px; font-size:.7rem; color:var(--ink-faint); transition:transform .15s; }
+  .rowhead.collapsed .rowtoggle .chev{ transform:rotate(-90deg); }
+  .rowhead .sub{ font-size:.68rem; color:var(--ink-faint); padding-left:20px; line-height:1.4; }
+  .pinbtn{ position:absolute; top:7px; right:4px; width:22px; height:22px; display:grid; place-items:center; border:none; background:none; border-radius:6px; color:var(--ink-faint); cursor:pointer; opacity:0; transition:opacity .15s; padding:0; }
+  .pinbtn svg{ width:13px; height:13px; }
+  .rowhead:hover .pinbtn, .pinbtn:focus-visible, .pinbtn.on{ opacity:1; }
+  .pinbtn.on{ color:var(--hl); }
+  .pinbtn:hover{ background:var(--surface-2); color:var(--ink); }
+  @media (hover:none){ .pinbtn{ opacity:.6; } }
+  .cell.collapsed{ min-height:0; padding:5px 6px; }
+  .rowhead.collapsed{ padding-top:5px; padding-bottom:5px; }
+  .rowhead.collapsed .sub{ display:none; }
+  .ccount{ align-self:flex-start; border:none; background:none; padding:1px 4px; border-radius:5px; font-size:.72rem; color:var(--ink-dim); cursor:pointer; }
+  .ccount:hover{ background:var(--surface-2); color:var(--ink); }
+  .ccount .hi{ color:var(--warn); font-weight:700; }
+  .datetag{ display:block; font-size:.68rem; color:var(--ink-dim); margin-top:2px; font-weight:500; }
+  .datetag.overdue{ color:var(--warn); font-weight:600; }
+  .later-head .title{ font-family:"Fraunces", Georgia, serif; font-size:1.25rem; font-weight:500; line-height:1.1; }
   .rowhead .sub{ font-size:.7rem; color:var(--ink-faint); }
   .dot{ width:9px; height:9px; border-radius:50%; background:var(--c); flex:none; }
 
   .cell{ min-height:96px; padding:6px; display:flex; flex-direction:column; gap:5px; transition:background .15s; }
-  .cell.backlog{ background-color:var(--bg); background-image:radial-gradient(var(--dot) 1px, transparent 1.3px); background-size:14px 14px; }
+  .cell.backlog, .cell.later{ background-color:var(--bg); background-image:radial-gradient(var(--dot) 1px, transparent 1.3px); background-size:14px 14px; }
   .cell.is-today, .colhead.is-today{ background:var(--today); }
   .colhead.is-today{ box-shadow:inset 0 3px 0 var(--hl); }
   .cell.drop{ background:var(--accent-soft); outline:2px dashed var(--accent); outline-offset:-3px; }
@@ -712,19 +731,30 @@
   }
 
   // ---------- render ----------
-  function chip(t, showCat){
+  function chip(t, showCat, showDate){
     return '<div class="chip'+(t.done?" done":"")+markCls(t.id)+'" draggable="true" data-id="'+esc(t.id)+'" style="--c:var(--cat-'+t.cat+')">' +
       '<button type="button" class="check" data-act="toggle" tabindex="-1" aria-pressed="'+t.done+'" aria-label="'+(t.done?"Mark not done":"Mark done")+'">'+(t.done?"✓":"")+'</button>' +
       '<button type="button" class="chip-title" data-act="open">'+(t.priority==="high"?'<span class="imp" aria-label="Important">!</span>':"")+esc(t.title)+
       (t.notes ? '<span class="has-notes" aria-label="Has notes">≡</span>' : "")+
       (showCat ? '<span class="cattag"><span class="dot" style="--c:var(--cat-'+t.cat+')"></span>'+CAT[t.cat].label+'</span>' : "")+
+      (showDate && t.date ? '<span class="datetag'+(!t.done && t.date < TODAY_ISO ? " overdue" : "")+'">'+(!t.done && t.date < TODAY_ISO ? "Overdue · " : "")+fmtDay(fromIso(t.date))+'</span>' : "")+
       (t.group ? '<span class="grouptag">@'+esc(GROUP[t.group].name)+'</span>' : "")+'</button>' +
     '</div>';
   }
-  function cell(cat, date, cls, showCat, list){
-    return '<div class="cell '+cls+'" tabindex="-1" data-cat="'+cat+'" data-date="'+(date||"")+'">' +
-      sortTasks(list).map(function(t){ return chip(t, showCat); }).join("") +
-      pasteBtn() + '<button type="button" class="add" data-act="add">+ Add</button></div>';
+  // opts: { dated: show each task's date, byDate: sort by date, collapsed: show a count instead of chips }
+  function cell(cat, date, cls, showCat, list, opts){
+    opts = opts || {};
+    var body;
+    if (opts.collapsed) {
+      var open = list.filter(function(t){ return !t.done; }), imp = open.filter(function(t){ return t.priority === "high"; }).length;
+      body = open.length ? '<button type="button" class="ccount" data-rowact="expand" title="Show tasks">'+open.length+(imp ? ' <span class="hi">!</span>' : '')+'</button>' : '';
+      cls += " collapsed";
+    } else {
+      var sorted = opts.byDate ? list.slice().sort(function(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; }) : sortTasks(list);
+      body = sorted.map(function(t){ return chip(t, showCat, opts.dated || (t.date && date !== t.date)); }).join("") +
+        pasteBtn() + '<button type="button" class="add" data-act="add">+ Add</button>';
+    }
+    return '<div class="cell '+cls+'" tabindex="-1" data-cat="'+cat+'" data-date="'+(date||"")+'">' + body + '</div>';
   }
   function miniBar(done, total){
     return '<span class="mini"><span class="bar"><i style="width:'+(total?Math.round(done/total*100):0)+'%"></i></span><span class="num">'+done+"/"+total+'</span></span>';
@@ -748,31 +778,85 @@
     document.getElementById("statBacklog").textContent = tasks.filter(function(t){ return !t.date && !t.done; }).length;
   }
 
+  // Rows: pinned rows first (in their usual order), then the rest by open tasks, most first.
+  // The order is only recalculated at moments you'd expect (load, week change, pin, edits from another
+  // device), so rows don't jump around while you tick things off.
+  var ROWS_KEY = "waypoint.rows";
+  var rowPrefs = { pinned: [], collapsed: [] };
+  try { var rp = JSON.parse(localStorage.getItem(ROWS_KEY) || "null"); if (rp) rowPrefs = { pinned: rp.pinned || [], collapsed: rp.collapsed || [] }; } catch (e) {}
+  function saveRowPrefs(){ try { localStorage.setItem(ROWS_KEY, JSON.stringify(rowPrefs)); } catch (e) {} }
+  var rowOrder = null, rowOrderStale = true;
+  function laterTasks(){ var end = iso(addDays(weekStart,6)); return tasks.filter(function(t){ return !t.done && t.date && t.date > end; }); }
+  function overdueTasks(){
+    // Open tasks from before the week on screen, shown in the Backlog column so they don't vanish.
+    if (weekStart < THIS_MON) return [];
+    var start = iso(weekStart);
+    return tasks.filter(function(t){ return !t.done && t.date && t.date < start && t.date < TODAY_ISO; });
+  }
+  function rowCounts(catId){
+    var dates = weekDates(), end = dates[6];
+    var open = tasks.filter(function(t){ return t.cat === catId && !t.done && (!t.date || t.date <= end) && (!t.date || t.date >= dates[0] || (weekStart >= THIS_MON && t.date < TODAY_ISO)); }).length;
+    var later = tasks.filter(function(t){ return t.cat === catId && !t.done && t.date && t.date > end; }).length;
+    return { open: open, later: later };
+  }
+  function orderedCats(){
+    if (!rowOrder || rowOrderStale) {
+      var pinned = CATS.filter(function(c){ return rowPrefs.pinned.indexOf(c.id) !== -1; });
+      var rest = CATS.filter(function(c){ return rowPrefs.pinned.indexOf(c.id) === -1; });
+      var n = {}; rest.forEach(function(c){ n[c.id] = rowCounts(c.id).open; });
+      rest.sort(function(a,b){ return (n[b.id] - n[a.id]) || (CATS.indexOf(a) - CATS.indexOf(b)); });
+      rowOrder = pinned.concat(rest).map(function(c){ return c.id; });
+      rowOrderStale = false;
+    }
+    return rowOrder.map(function(id){ return CAT[id]; });
+  }
+  var PIN_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 3l6 6-2.5.8-3.6 3.6.6 4.6-1.5 1.5-4-4L5 20.5 3.5 19l4.9-5-4-4L5.9 8.5l4.6.6 3.6-3.6z"/></svg>';
+  function toggleRow(list, id){ var i = list.indexOf(id); if (i === -1) list.push(id); else list.splice(i, 1); }
+
   function renderGrid(){
     var dates = weekDates();
-    var h = '<div class="corner"></div><div class="colhead backlog-head"><span class="dow">Undated</span><span class="title">Backlog</span></div>';
+    var later = laterTasks(), overdue = overdueTasks();
+    var h = '<div class="corner"></div><div class="colhead backlog-head"><span class="dow">Undated'+(overdue.length ? ' · '+overdue.length+' overdue' : '')+'</span><span class="title">Backlog</span></div>';
     dates.forEach(function(k,i){
       var dayTasks = tasks.filter(function(t){ return t.date === k; });
       var d = fromIso(k);
-      h += '<div class="colhead'+(k===TODAY_ISO?" is-today":"")+(d<TODAY?" is-past":"")+(i===6?" lastcol":"")+'">' +
+      h += '<div class="colhead'+(k===TODAY_ISO?" is-today":"")+(d<TODAY?" is-past":"")+'">' +
         '<span class="dow">'+DOW[i]+'</span><span class="daynum">'+d.getDate()+'</span>' +
         miniBar(dayTasks.filter(function(t){ return t.done; }).length, dayTasks.length)+'</div>';
     });
-    CATS.forEach(function(c, ri){
-      var last = ri === CATS.length-1 ? " lastrow" : "";
-      var open = tasks.filter(function(t){ return t.cat === c.id && !t.done && (!t.date || dates.indexOf(t.date) !== -1); }).length;
-      h += '<div class="rowhead'+last+'"><span class="name"><span class="dot" style="--c:var(--cat-'+c.id+')"></span>'+c.label+'</span><span class="sub num">'+open+' open</span></div>';
-      h += cell(c.id, null, "backlog"+last, false, tasks.filter(function(t){ return t.cat === c.id && !t.date; }));
-      dates.forEach(function(k,i){
-        h += cell(c.id, k, (k===TODAY_ISO?"is-today":"")+(i===6?" lastcol":"")+last, false, tasks.filter(function(t){ return t.cat === c.id && t.date === k; }));
+    h += '<div class="colhead later-head lastcol"><span class="dow">After '+fmtDM(addDays(weekStart,6))+(later.length ? ' · '+later.length : '')+'</span><span class="title">Later</span></div>';
+    var cats = orderedCats();
+    cats.forEach(function(c, ri){
+      var last = ri === cats.length-1 ? " lastrow" : "";
+      var col = rowPrefs.collapsed.indexOf(c.id) !== -1, pin = rowPrefs.pinned.indexOf(c.id) !== -1;
+      var n = rowCounts(c.id);
+      h += '<div class="rowhead'+last+(col?" collapsed":"")+'" data-row="'+c.id+'">' +
+        '<button type="button" class="rowtoggle" data-rowact="collapse" aria-expanded="'+!col+'" title="'+(col?"Expand":"Collapse")+' '+c.label+'"><span class="chev" aria-hidden="true">▾</span><span class="dot" style="--c:var(--cat-'+c.id+')"></span>'+c.label+'</button>' +
+        '<span class="sub num">'+n.open+' open'+(n.later ? ' · '+n.later+' later' : '')+'</span>' +
+        '<button type="button" class="pinbtn'+(pin?" on":"")+'" data-rowact="pin" aria-pressed="'+pin+'" aria-label="'+(pin?"Unpin ":"Pin ")+c.label+' row to the top" title="'+(pin?"Unpin":"Pin to top")+'">'+PIN_SVG+'</button></div>';
+      h += cell(c.id, null, "backlog"+last, false, tasks.filter(function(t){ return t.cat === c.id && !t.date; }).concat(overdue.filter(function(t){ return t.cat === c.id; })), { collapsed: col });
+      dates.forEach(function(k){
+        h += cell(c.id, k, (k===TODAY_ISO?"is-today":"")+last, false, tasks.filter(function(t){ return t.cat === c.id && t.date === k; }), { collapsed: col });
       });
+      h += cell(c.id, "later", "later lastcol"+last, false, later.filter(function(t){ return t.cat === c.id; }), { dated: true, byDate: true, collapsed: col });
     });
     document.getElementById("grid").innerHTML = h;
   }
+  document.getElementById("grid").addEventListener("click", function(e){
+    var b = e.target.closest("[data-rowact]"); if (!b) return;
+    var row = b.closest(".rowhead"), catId = row ? row.dataset.row : b.closest(".cell").dataset.cat;
+    if (b.dataset.rowact === "pin") { toggleRow(rowPrefs.pinned, catId); rowOrderStale = true; }
+    else if (b.dataset.rowact === "expand") { rowPrefs.collapsed = rowPrefs.collapsed.filter(function(x){ return x !== catId; }); }
+    else toggleRow(rowPrefs.collapsed, catId);
+    saveRowPrefs(); render();
+    var again = document.querySelector('#grid .rowhead[data-row="'+catId+'"] [data-rowact="'+(b.dataset.rowact === "pin" ? "pin" : "collapse")+'"]');
+    if (again && b.dataset.rowact !== "expand") again.focus({ preventScroll: true });
+  });
 
   function renderAgenda(){
     var dates = weekDates();
-    var backlog = tasks.filter(function(t){ return !t.date; });
+    var backlog = tasks.filter(function(t){ return !t.date; }).concat(overdueTasks());
+    var later = laterTasks();
     var h = '<section class="ag-day"><header><span class="when"><span class="daynum">Backlog</span></span><span class="num nudge">'+backlog.filter(function(t){ return !t.done; }).length+' open</span></header>' +
       cell("general", null, "backlog", true, backlog)+'</section>';
     dates.forEach(function(k,i){
@@ -782,11 +866,13 @@
         miniBar(list.filter(function(t){ return t.done; }).length, list.length)+'</header>' +
         cell("general", k, "", true, list)+'</section>';
     });
+    h += '<section class="ag-day"><header><span class="when"><span class="daynum">Later</span><span class="dow">after '+fmtDM(addDays(weekStart,6))+'</span></span><span class="num nudge">'+later.length+' open</span></header>' +
+      cell("general", "later", "later", true, later, { dated: true, byDate: true })+'</section>';
     document.getElementById("agenda").innerHTML = h;
   }
 
   function renderList(){
-    document.getElementById("listGroups").innerHTML = CATS.map(function(c){
+    document.getElementById("listGroups").innerHTML = orderedCats().map(function(c){
       var list = tasks.filter(function(t){ return t.cat === c.id; }).sort(function(a,b){
         if (a.done !== b.done) return a.done ? 1 : -1;
         var ad = a.date || "9999", bd = b.date || "9999";
@@ -942,9 +1028,12 @@
       var committed = false;
       var commit = function(){
         if (committed) return; committed = true;
-        var p = parse(input.value, { cat: c.dataset.cat, date: c.dataset.date || null });
+        var isLater = c.dataset.date === "later";
+        var p = parse(input.value, { cat: c.dataset.cat, date: isLater ? null : (c.dataset.date || null) });
         if (p.groupToken && !p.catExplicit) p.catExplicit = true; // the cell's row is the category
-        if (p.title) addTask(p); else render();
+        if (!p.title) { render(); return; }
+        if (isLater && !p.date) { render(); pickLaterDate(function(v){ p.date = v; addTask(p); }); return; }
+        addTask(p);
       };
       input.addEventListener("keydown", function(ev){
         if (ev.key === "Enter") { ev.preventDefault(); commit(); }
@@ -976,6 +1065,7 @@
     var c = e.target.closest(".cell"); if (!c) return;
     e.preventDefault(); clearDrop();
     var t = find(e.dataTransfer.getData("text/plain")); if (!t) return;
+    if (c.dataset.date === "later") { pickLaterDate(function(v){ move(t.id, c.dataset.cat, v); }, t.date); return; }
     var date = c.dataset.date || null;
     if (t.cat === c.dataset.cat && t.date === date) return;
     move(t.id, c.dataset.cat, date);
@@ -1417,11 +1507,17 @@
   }
   function clearMarks(){ if (selected.length || clip) { selected = []; clip = null; render(); } }
 
+  // Dropping, pasting or adding into "Later" asks for the exact date, defaulting to the Monday after this week.
+  function pickLaterDate(cb, current){
+    var end = iso(addDays(weekStart,6));
+    openCal({ heading: "Pick a date (after " + fmtDM(addDays(weekStart,6)) + ")", value: current && current > end ? current : iso(addDays(weekStart,7)), allowClear: false, onPick: function(v){ if (v) cb(v); } });
+  }
   function targetFromEl(el){
     if (!el || !el.closest) return null;
     var c = el.closest(".cell");
     if (c) {
       var inAgenda = !!c.closest("#agenda");
+      if (c.dataset.date === "later") return { kind: "later", cat: inAgenda ? null : c.dataset.cat };
       return { kind: inAgenda ? "day" : "cell", cat: c.dataset.cat, date: c.dataset.date || null };
     }
     var lv = el.closest(".lv-group"); if (lv) return { kind: "cat", cat: lv.dataset.cat };
@@ -1442,6 +1538,10 @@
   }
   function pasteInto(target, srcEl, text){
     if (!target) { toast("Click a calendar cell, a list or a group card first, then paste"); return; }
+    if (target.kind === "later") {
+      pickLaterDate(function(v){ pasteInto(target.cat ? { kind: "cell", cat: target.cat, date: v } : { kind: "day", date: v }, srcEl, text); });
+      return;
+    }
     if (text && text.trim() && !(clip && (!clip.viaSystem || text === clip.text))) { pasteText(text, target); return; }
     if (!clip) return;
     var ids = clip.ids.filter(function(id){ return !!find(id); });
@@ -1578,7 +1678,7 @@
       var c = a.closest(".cell"); if (!c) return;
       if (vertical) target = stepIn(seqOfCells(Array.prototype.slice.call(h.querySelectorAll('.cell[data-date="' + cssq(c.dataset.date) + '"]'))), a, dir);
       else {
-        var cols = [""].concat(weekDates()), i = cols.indexOf(c.dataset.date) + (dir === "left" ? -1 : 1);
+        var cols = [""].concat(weekDates(), ["later"]), i = cols.indexOf(c.dataset.date) + (dir === "left" ? -1 : 1);
         if (i >= 0 && i < cols.length) target = h.querySelector('.cell[data-cat="' + cssq(c.dataset.cat) + '"][data-date="' + cols[i] + '"]');
       }
     } else if (h.id === "agenda") {
@@ -1707,8 +1807,8 @@
       case "2": setView("list"); return;
       case "3": setView("groups"); return;
       case "t": weekStart = THIS_MON; setView("week"); focusStart(); return;
-      case "[": weekStart = addDays(weekStart, -7); render(); return;
-      case "]": weekStart = addDays(weekStart, 7); render(); return;
+      case "[": weekStart = addDays(weekStart, -7); rowOrderStale = true; render(); return;
+      case "]": weekStart = addDays(weekStart, 7); rowOrderStale = true; render(); return;
       case "?": e.preventDefault(); openHelp(); return;
     }
   });
@@ -1735,13 +1835,13 @@
   });
 
   // Week nav + views
-  function setView(v){ view = v; try { localStorage.setItem("waypoint.view", v); } catch (e) {} render(); }
-  document.getElementById("prevWeek").addEventListener("click", function(){ weekStart = addDays(weekStart,-7); render(); });
-  document.getElementById("nextWeek").addEventListener("click", function(){ weekStart = addDays(weekStart,7); render(); });
-  document.getElementById("thisWeek").addEventListener("click", function(){ weekStart = THIS_MON; render(); });
+  function setView(v){ view = v; rowOrderStale = true; try { localStorage.setItem("waypoint.view", v); } catch (e) {} render(); }
+  document.getElementById("prevWeek").addEventListener("click", function(){ weekStart = addDays(weekStart,-7); rowOrderStale = true; render(); });
+  document.getElementById("nextWeek").addEventListener("click", function(){ weekStart = addDays(weekStart,7); rowOrderStale = true; render(); });
+  document.getElementById("thisWeek").addEventListener("click", function(){ weekStart = THIS_MON; rowOrderStale = true; render(); });
   document.getElementById("weekPick").addEventListener("click", function(){
     openCal({ heading:"Jump to a week", value: iso(weekStart), allowClear:false, onPick: function(v){
-      if (v) { weekStart = monday(fromIso(v)); if (view !== "week") setView("week"); else render(); }
+      if (v) { weekStart = monday(fromIso(v)); rowOrderStale = true; if (view !== "week") setView("week"); else render(); }
     }});
   });
   document.getElementById("viewWeek").addEventListener("click", function(){ setView("week"); });
@@ -1932,7 +2032,9 @@
     });
     return d;
   }
+  var dataShown = false;
   function showDoc(d){
+    if (!dataShown) { dataShown = true; rowOrderStale = true; }
     raw = Object.keys(d.tasks || {}).map(function(id){ return { id: id, data: d.tasks[id] }; });
     rawGroups = Object.keys(d.groups || {}).map(function(id){ return { id: id, data: d.groups[id] }; });
     normalize(); render();
@@ -2059,7 +2161,7 @@
     var v = ghVersion;
     ghGet(gh).then(function(latest){
       if (v !== ghVersion || flushing || !latest) return;     // a save landed meanwhile; next poll catches up
-      if (!ghBase || latest.sha !== ghBase.sha) { ghBase = latest; showDoc(currentDoc()); }
+      if (!ghBase || latest.sha !== ghBase.sha) { ghBase = latest; rowOrderStale = true; showDoc(currentDoc()); }
       if (!pending.length) setSync("ok");
     }, function(e){ setSync(e.status === 401 || e.status === 403 ? "auth" : "offline"); });
   }
@@ -2186,6 +2288,7 @@
         normalize(); render();
       }, syncLost);
       db.collection("tasks").onSnapshot(function(snap){
+        if (!raw.length) rowOrderStale = true;
         raw = snap.docs.map(function(d){ return { id: d.id, data: d.data() }; });
         normalize(); render();
       }, syncLost);

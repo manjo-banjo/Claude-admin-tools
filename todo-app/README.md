@@ -27,9 +27,18 @@ or disconnect later.
 
 - **Week view (front page)** — a planner grid: one row per category (Work,
   Social, Health, Admin, General), one column for the undated Backlog, then
-  Mon–Sun. Today's column is highlighted. On phones the grid becomes a
-  scrolling agenda (Backlog first, then each day).
-- **List view** — every task grouped by category, sorted by date.
+  Mon–Sun, then a **Later** column listing open tasks dated after that week
+  (soonest first, each with its date). Today's column is highlighted. Open
+  tasks from earlier weeks stay visible in Backlog with a red "Overdue" tag.
+  Dropping, pasting or adding into Later asks for the date with the calendar.
+  - Rows are ordered by open tasks (Backlog + overdue + this week), most first;
+    the order refreshes on load, week change, pinning, or edits from another
+    device — not while you tick things off. Pin a row (pin icon on its header)
+    to keep it at the top. Click a row's name to collapse it to a strip of
+    per-day counts. Pins and collapsed rows are remembered per device.
+  - On phones the grid becomes a scrolling agenda (Backlog and overdue first,
+    then each day, then Later).
+- **List view** — every task grouped by category, sorted by date (lists in the same order as the week rows).
 - **Groups view** — free-form, long-running projects (e.g. "Switch gas
   provider") made of ordered steps. Each card shows a progress bar, done/total
   and %, steps left, when it started and last activity; the first unfinished
