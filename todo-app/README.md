@@ -44,7 +44,15 @@ or disconnect later.
     per device.
   - On phones the grid becomes a scrolling agenda (Backlog and overdue first,
     then each day, then Later).
-- **List view** — every task grouped by category, sorted by date (lists in the same order as the week rows).
+- **List view** — every task grouped by category (lists in the same order as the week rows).
+- **Your own order** — in week cells and the List view, drag a task up or down
+  (a blue line shows where it lands; dropping into another cell moves it to that
+  exact spot) or press Alt+↑ / Alt+↓. Ticked tasks stay at the bottom; tasks you
+  haven't arranged keep oldest-first order, so new ones land at the bottom.
+- **Group sub-items** — when several tasks of one group sit in the same cell or
+  list, the group's first unfinished step shows with the `@group` tag and the
+  other steps nest underneath it in step order. Dragging the top item moves the
+  whole block; change step order in the Groups view.
 - **Groups view** — free-form, long-running projects (e.g. "Switch gas
   provider") made of ordered steps. Each card shows a progress bar, done/total
   and %, steps left, when it started and last activity; the first unfinished
@@ -106,6 +114,7 @@ or disconnect later.
         "notes": "",
         "group": "<group id>",       // "" for none
         "step": 1793455422000,       // order within the group (lower = earlier), or null
+        "order": 1793455422000,      // optional: your manual position in a cell/list (lower = higher up)
         "done": false,
         "createdAt": "2026-11-02T09:00:00.000Z",
         "completedAt": null          // ISO time when ticked off
