@@ -1,11 +1,27 @@
 # Waypoint — weekly planner
 
-Source for the published Claude Artifact: `waypoint.html`.
+**Open it:** https://manjo-banjo.github.io/Claude-admin-tools/todo-app/
 
-Live app: https://claude.ai/artifact/6A6gGG7TcVkxwX5caAL6AJ
+A single-file web app (`index.html`), hosted on GitHub Pages. No build step, no
+server: GitHub serves the file, and your tasks are saved to a JSON file in a
+separate **private** repo through GitHub's API. Works on desktop and phone
+(add it to your home screen for an app-like icon).
 
-A single-file HTML app, published as a Claude Artifact, so it runs as a normal
-responsive web page on desktop and mobile with no separate hosting.
+## First-time setup (once per device)
+
+1. Create a **private** repo for the data, e.g. `waypoint-data` (empty is fine).
+2. Create a fine-grained token at
+   https://github.com/settings/personal-access-tokens/new —
+   *Repository access*: Only select repositories → the data repo;
+   *Permissions*: Contents → **Read and write**. Pick an expiry you're happy
+   with; when it expires the app shows "GitHub access lost" and you paste a new one.
+3. Open the app, enter `owner/waypoint-data` and the token, press **Connect**.
+   The token is kept in that browser only. The app creates `waypoint.json` if
+   it doesn't exist.
+
+"Use this device only" skips GitHub and keeps tasks in that browser instead
+(no sync between devices). Click the status pill next to the title to connect
+or disconnect later.
 
 ## What it does
 
@@ -39,26 +55,54 @@ responsive web page on desktop and mobile with no separate hosting.
   category, day, importance and notes.
 - **Progress** — week progress bar, per-day done/total, done today, day streak,
   backlog size.
-- **Ask Claude** — the 💬 button lets you change the planner in plain English
-  ("move dentist to Friday", "add renew passport to admin on 5 Dec",
-  "plan switching gas provider: switch name, meter change, new tariff, then
-  move provider" — which creates a group with those steps in order).
+- **Updating with Claude** — ask Claude (in a session with the data repo
+  attached) to add, move or complete tasks; it edits `waypoint.json` and the
+  app picks the change up within ~30 seconds. (The in-app 💬 chat button only
+  appears when the page runs as a Claude artifact.)
 
 ## How it's built
 
-- Data lives in the artifact's `db` capability:
-  - `tasks` — one document per task: `title`, `tab` (category id),
-    `priority` (`med`|`high`), `due` (`YYYY-MM-DD`, empty = Backlog), `notes`,
-    `group` (group doc id, empty = none), `step` (sort order within the group),
-    `done`, `createdAt`, `completedAt`.
-  - `groups` — one document per group: `name`, `createdAt`.
-  Every open copy of the page stays in sync live.
-- The chat panel uses the `sample` capability with page-defined tools
-  (`add_task`, `complete_task`, `reopen_task`, `update_task`, `delete_task`)
-  that write to the same `tasks` collection as the manual UI.
-- No backend, no build step — publishing the HTML file *is* the deploy.
+- **Storage.** Everything is one JSON file, `waypoint.json`, at the root of the
+  private data repo:
 
-## Editing
+  ```jsonc
+  {
+    "format": "waypoint/1",
+    "updatedAt": "2026-11-02T09:00:00.000Z",
+    "tasks": {
+      "<id>": {
+        "title": "Book meter change",
+        "tab": "admin",              // work | social | health | admin | general
+        "priority": "med",           // med | high (shown as "!")
+        "due": "2026-11-06",         // YYYY-MM-DD, or "" for the Backlog
+        "notes": "",
+        "group": "<group id>",       // "" for none
+        "step": 1793455422000,       // order within the group (lower = earlier), or null
+        "done": false,
+        "createdAt": "2026-11-02T09:00:00.000Z",
+        "completedAt": null          // ISO time when ticked off
+      }
+    },
+    "groups": {
+      "<id>": { "name": "Switch gas provider", "createdAt": "2026-11-02T09:00:00.000Z" }
+    }
+  }
+  ```
 
-Update `waypoint.html` and republish it as an Artifact to the same URL
-(`Artifact` tool, passing `url` to update in place) to ship changes.
+  Ids are any unique string. Anything (you, Claude, a script) can edit this file
+  directly; keep it valid JSON.
+- **Sync.** Edits show instantly and are committed to the data repo about a
+  second later (several quick edits become one commit). The app re-reads the
+  file every 30 seconds and when you return to the tab, so changes made on
+  another device or by Claude appear on their own. If the file changed since
+  the app last read it, the app fetches the latest version and re-applies its
+  own edits on top, so nothing is lost.
+- **Status pill** next to the title: Synced / Saving… / Offline — retrying /
+  GitHub access lost — reconnect / This device only.
+- **Inside a Claude artifact** the same file instead uses the artifact's
+  built-in database and shows the 💬 chat button; that copy keeps its own,
+  separate data.
+
+## Editing the app
+
+Edit `index.html` and push. GitHub Pages republishes within a minute or two.

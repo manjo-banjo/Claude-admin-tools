@@ -1,4 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2F6F5E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Waypoint">
+<meta name="robots" content="noindex">
 <title>Waypoint</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232F6F5E'/%3E%3Cpath d='M30 52l14 14 26-30' fill='none' stroke='white' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
   :root{
@@ -44,7 +54,9 @@
   .brand{ display:flex; flex-direction:column; gap:2px; }
   .brand-row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
   .brand h1{ font-family:"Fraunces", Georgia, serif; font-weight:600; font-size:1.9rem; margin:0; letter-spacing:-.01em; }
-  .sync-badge{ font-size:.72rem; font-weight:500; color:var(--warn); background:var(--warn-soft); border-radius:999px; padding:3px 10px; }
+  .sync-pill{ font-size:.72rem; font-weight:500; color:var(--ink-dim); background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:3px 10px; cursor:pointer; }
+  .sync-pill.warn{ color:var(--warn); background:var(--warn-soft); border-color:transparent; }
+  .sync-pill.busy{ color:var(--accent); }
   .weekline{ display:flex; align-items:center; gap:8px; color:var(--ink-dim); font-size:.9rem; flex-wrap:wrap; }
   .weekline .wk{ font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-faint); }
   .navbtn{ background:var(--surface); border:1px solid var(--line); border-radius:8px; width:30px; height:30px; cursor:pointer; font-size:.95rem; }
@@ -214,6 +226,18 @@
   .btn.danger{ color:var(--warn); }
   .btn.quiet{ border-color:transparent; color:var(--ink-dim); font-weight:500; }
 
+  /* Storage setup */
+  .setup{ position:fixed; z-index:38; left:50%; top:50%; transform:translate(-50%,-50%); width:min(460px, calc(100vw - 32px)); max-height:calc(100vh - 32px); overflow-y:auto; background:var(--surface); border:1px solid var(--line-strong); border-radius:16px; box-shadow:var(--shadow); padding:20px; display:flex; flex-direction:column; gap:10px; }
+  .setup h2{ margin:0; font-family:"Fraunces", Georgia, serif; font-size:1.35rem; font-weight:600; }
+  .setup p{ margin:0; font-size:.86rem; line-height:1.5; color:var(--ink-dim); }
+  .setup label{ font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-faint); margin-top:4px; }
+  .setup input{ width:100%; border:1px solid var(--line); border-radius:9px; padding:9px 11px; background:var(--bg); font-size:.92rem; }
+  .setup ol{ margin:0; padding-left:18px; font-size:.82rem; line-height:1.55; color:var(--ink-dim); }
+  .setup a{ color:var(--accent); }
+  .setup-err{ color:var(--warn) !important; font-weight:500; }
+  .setup .acts{ display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; margin-top:6px; }
+  .setup .acts span{ display:flex; gap:8px; }
+
   /* Calendar */
   .calscrim{ position:fixed; inset:0; background:rgba(10,15,12,.3); z-index:35; }
   .cal{ position:fixed; z-index:36; left:50%; top:50%; transform:translate(-50%,-50%); width:min(340px, calc(100vw - 32px)); background:var(--surface); border:1px solid var(--line-strong); border-radius:16px; box-shadow:var(--shadow); padding:14px; display:flex; flex-direction:column; gap:10px; }
@@ -249,13 +273,15 @@
   .toast{ position:fixed; left:50%; bottom:84px; transform:translateX(-50%); max-width:calc(100vw - 32px); background:var(--ink); color:var(--bg); font-size:.84rem; padding:9px 14px; border-radius:10px; z-index:40; box-shadow:var(--shadow); }
   @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
 </style>
+</head>
+<body>
 
 <div class="page">
   <div class="top">
     <div class="brand">
       <div class="brand-row">
         <h1>Waypoint</h1>
-        <span class="sync-badge" id="syncBadge" hidden>Not saving in this view</span>
+        <button type="button" class="sync-pill" id="syncPill" hidden></button>
       </div>
       <div class="weekline">
         <button class="navbtn" id="prevWeek" aria-label="Previous week">‹</button>
@@ -344,6 +370,29 @@
     <button type="button" class="btn" id="calToday">Today</button>
     <button type="button" class="btn" id="calClear">No date</button>
     <button type="button" class="btn quiet" id="calCancel">Cancel</button>
+  </div>
+</div>
+
+<div class="calscrim" id="setupScrim" hidden></div>
+<div class="setup" id="setup" role="dialog" aria-modal="true" aria-labelledby="setupTitle" hidden>
+  <h2 id="setupTitle">Where should your tasks live?</h2>
+  <p>Connect a private GitHub repo and your tasks are saved there, so your laptop and phone share one list. You do this once per device; the token stays in this browser only.</p>
+  <ol>
+    <li>Create a <b>private</b> repo, e.g. <code>waypoint-data</code> (it can be empty).</li>
+    <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Create a fine-grained token</a>: Repository access → <i>Only select repositories</i> → that repo; Permissions → <i>Contents: Read and write</i>.</li>
+    <li>Paste both below.</li>
+  </ol>
+  <label for="setupRepo">Private repo</label>
+  <input id="setupRepo" type="text" placeholder="your-name/waypoint-data" autocomplete="off" autocapitalize="off" spellcheck="false">
+  <label for="setupToken">Access token</label>
+  <input id="setupToken" type="password" placeholder="github_pat_…" autocomplete="off">
+  <p class="setup-err" id="setupErr" role="alert" hidden></p>
+  <div class="acts">
+    <button type="button" class="btn quiet" id="setupLocal">Use this device only</button>
+    <span>
+      <button type="button" class="btn danger" id="setupDisconnect" hidden>Disconnect</button>
+      <button type="button" class="btn primary" id="setupGo">Connect</button>
+    </span>
   </div>
 </div>
 
@@ -570,6 +619,7 @@
   // ---------- store ----------
   function write(op, id, data, quiet, colName){
     colName = colName || "tasks";
+    if (backend === "github" || backend === "local") return docWrite(op, id, data, colName);
     if (db) {
       var col = db.collection(colName);
       var p = op === "add" ? col.add(data) : op === "update" ? col.doc(id).update(data) : col.doc(id).delete();
@@ -1365,6 +1415,267 @@
     });
   });
 
+  // ---------- document storage: a JSON file in a private GitHub repo, or this browser ----------
+  // Outside a Claude artifact, all data is one document:
+  //   { format: "waypoint/1", updatedAt, tasks: { <id>: {...} }, groups: { <id>: {...} } }
+  // Edits apply locally at once and are queued; the queue is committed to GitHub shortly after.
+  // If the file changed elsewhere (another device, or Claude editing it), the queue is replayed on top.
+  var backend = "none";                       // "claude" | "github" | "local"
+  var GH_KEY = "waypoint.github", LOCAL_KEY = "waypoint.local", MODE_KEY = "waypoint.mode";
+  var gh = null;                              // { repo: "owner/name", token, path }
+  var ghBase = null;                          // { doc, sha } last known file on GitHub
+  var pending = [];                           // queued ops: { op, col, id, data }
+  var flushing = false, flushTimer = null, ghVersion = 0, conflicts = 0;
+  var localDoc = null;
+
+  function emptyDoc(){ return { format: "waypoint/1", tasks: {}, groups: {} }; }
+  function applyOps(base, ops){
+    var d = JSON.parse(JSON.stringify(base || emptyDoc()));
+    d.tasks = d.tasks || {}; d.groups = d.groups || {};
+    ops.forEach(function(o){
+      var c = d[o.col]; if (!c) return;
+      if (o.op === "add") c[o.id] = o.data;
+      else if (o.op === "update") { if (c[o.id]) c[o.id] = Object.assign({}, c[o.id], o.data); }
+      else if (o.op === "delete") delete c[o.id];
+    });
+    return d;
+  }
+  function showDoc(d){
+    raw = Object.keys(d.tasks || {}).map(function(id){ return { id: id, data: d.tasks[id] }; });
+    rawGroups = Object.keys(d.groups || {}).map(function(id){ return { id: id, data: d.groups[id] }; });
+    normalize(); render();
+  }
+  function currentDoc(){ return backend === "github" ? applyOps(ghBase ? ghBase.doc : emptyDoc(), pending) : (localDoc || emptyDoc()); }
+  function newId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+  function docWrite(op, id, data, col){
+    var cur = currentDoc();
+    if (op !== "add" && !(cur[col] && cur[col][id])) return Promise.reject({ code:"not_found", message:"Nothing with that id." });
+    var o = { op: op, col: col, id: op === "add" ? newId() : id, data: data };
+    if (backend === "github") { pending.push(o); showDoc(currentDoc()); scheduleFlush(); }
+    else { localDoc = applyOps(localDoc, [o]); saveLocal(); showDoc(localDoc); }
+    return Promise.resolve({ id: o.id });
+  }
+  function loadLocal(){
+    try { var t = localStorage.getItem(LOCAL_KEY); localDoc = t ? JSON.parse(t) : emptyDoc(); }
+    catch (e) { localDoc = emptyDoc(); }
+  }
+  function saveLocal(){
+    try { localStorage.setItem(LOCAL_KEY, JSON.stringify(localDoc)); }
+    catch (e) { toast("This browser isn't letting the page save — connect GitHub to keep your tasks."); }
+  }
+
+  // --- status pill ---
+  var syncState = "";
+  function setSync(state){
+    syncState = state;
+    var el = document.getElementById("syncPill");
+    var map = {
+      ok: ["Synced", ""], saving: ["Saving…", "busy"], loading: ["Loading…", "busy"],
+      offline: ["Offline — retrying", "warn"], auth: ["GitHub access lost — reconnect", "warn"],
+      local: ["This device only", ""], lost: ["Not saving — reload the page", "warn"]
+    };
+    var m = map[state];
+    el.hidden = !m || backend === "claude" && state !== "lost";
+    if (m) { el.textContent = m[0]; el.className = "sync-pill" + (m[1] ? " " + m[1] : ""); }
+    el.title = backend === "github" && gh ? "Saved to " + gh.repo + "/" + gh.path : "";
+  }
+  document.getElementById("syncPill").addEventListener("click", function(){ if (backend !== "claude") openSetup(); });
+
+  // --- GitHub contents API ---
+  function b64encode(str){
+    var bytes = new TextEncoder().encode(str), bin = "";
+    for (var i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    return btoa(bin);
+  }
+  function b64decode(b64){
+    var bin = atob(String(b64).replace(/\s/g,"")), bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
+  function ghHeaders(cfg){
+    return { "Authorization": "Bearer " + cfg.token, "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" };
+  }
+  function ghErr(r){ var e = new Error("GitHub " + r.status); e.status = r.status; return e; }
+  function ghFileUrl(cfg){ return "https://api.github.com/repos/" + cfg.repo + "/contents/" + cfg.path.split("/").map(encodeURIComponent).join("/"); }
+  function ghGet(cfg){
+    return fetch(ghFileUrl(cfg), { headers: ghHeaders(cfg), cache: "no-store" }).then(function(r){
+      if (r.status === 404) return null;
+      if (!r.ok) throw ghErr(r);
+      return r.json().then(function(j){
+        var text = b64decode(j.content || "");
+        return { doc: text.trim() ? JSON.parse(text) : emptyDoc(), sha: j.sha };
+      });
+    });
+  }
+  function ghPut(cfg, doc, sha, message){
+    var body = { message: message, content: b64encode(JSON.stringify(doc, null, 2) + "\n") };
+    if (sha) body.sha = sha;
+    return fetch(ghFileUrl(cfg), {
+      method: "PUT", headers: Object.assign({ "Content-Type": "application/json" }, ghHeaders(cfg)), body: JSON.stringify(body)
+    }).then(function(r){
+      if (!r.ok) throw ghErr(r);
+      return r.json().then(function(j){ return j.content.sha; });
+    });
+  }
+  function commitMessage(ops){
+    if (ops.length !== 1) return "Waypoint: " + ops.length + " changes";
+    var o = ops[0], what = o.col === "groups" ? "group" : "task";
+    var title = o.data && (o.data.title || o.data.name);
+    if (o.op === "add") return "Waypoint: add " + what + (title ? " \"" + String(title).slice(0,60) + "\"" : "");
+    if (o.op === "delete") return "Waypoint: delete " + what;
+    if (o.data && "done" in o.data) return "Waypoint: " + (o.data.done ? "complete" : "reopen") + " task";
+    return "Waypoint: update " + what;
+  }
+  function scheduleFlush(delay){
+    clearTimeout(flushTimer);
+    flushTimer = setTimeout(flush, delay == null ? 800 : delay);
+    if (syncState !== "auth") setSync("saving");
+  }
+  function flush(){
+    if (flushing || !pending.length || !gh) return;
+    flushing = true;
+    var batch = pending.slice();
+    var doc = applyOps(ghBase ? ghBase.doc : emptyDoc(), batch);
+    doc.format = "waypoint/1"; doc.updatedAt = new Date().toISOString();
+    ghPut(gh, doc, ghBase && ghBase.sha, commitMessage(batch)).then(function(sha){
+      ghBase = { doc: doc, sha: sha }; ghVersion++; conflicts = 0;
+      pending = pending.slice(batch.length);
+      flushing = false;
+      if (pending.length) scheduleFlush(); else setSync("ok");
+    }, function(e){
+      flushing = false;
+      if ((e.status === 409 || e.status === 422) && conflicts < 3) {
+        // The file changed since we last read it: fetch the latest and replay our queued edits on top.
+        conflicts++;
+        ghGet(gh).then(function(latest){
+          ghBase = latest; ghVersion++; showDoc(currentDoc()); scheduleFlush(300);
+        }, flushFailed);
+        return;
+      }
+      flushFailed(e);
+    });
+  }
+  function flushFailed(e){
+    conflicts = 0;
+    var st = e && (e.status === 401 || e.status === 403 || e.status === 404) ? "auth" : "offline";
+    scheduleFlush(15000);
+    setSync(st);
+  }
+  function poll(){
+    if (backend !== "github" || flushing || document.hidden) return;
+    var v = ghVersion;
+    ghGet(gh).then(function(latest){
+      if (v !== ghVersion || flushing || !latest) return;     // a save landed meanwhile; next poll catches up
+      if (!ghBase || latest.sha !== ghBase.sha) { ghBase = latest; showDoc(currentDoc()); }
+      if (!pending.length) setSync("ok");
+    }, function(e){ setSync(e.status === 401 || e.status === 403 ? "auth" : "offline"); });
+  }
+  setInterval(poll, 30000);
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) poll(); });
+  window.addEventListener("beforeunload", function(e){ if (backend === "github" && pending.length) { flush(); e.preventDefault(); e.returnValue = ""; } });
+
+  // --- connect / setup ---
+  function connect(cfg){
+    // Check the repo is reachable and writable, create the data file if needed, then switch over.
+    return fetch("https://api.github.com/repos/" + cfg.repo, { headers: ghHeaders(cfg), cache: "no-store" }).then(function(r){
+      if (r.status === 401) throw new Error("GitHub didn't accept that token. Copy it again — it starts with github_pat_.");
+      if (r.status === 404 || r.status === 403) throw new Error("This token can't see " + cfg.repo + ". Check the repo name, and that the token's repository access includes it.");
+      if (!r.ok) throw new Error("GitHub returned an error (" + r.status + "). Try again in a minute.");
+      return r.json();
+    }).then(function(repo){
+      if (repo && repo.private === false) throw new Error(cfg.repo + " is public — anyone could read your tasks. Use a private repo.");
+      return ghGet(cfg);
+    }).then(function(file){
+      if (file) return file;
+      return ghPut(cfg, emptyDoc(), null, "Waypoint: create data file").then(function(sha){ return { doc: emptyDoc(), sha: sha }; }, function(e){
+        if (e.status === 403 || e.status === 404) throw new Error("The token can read the repo but not write to it. Give it Contents: Read and write.");
+        throw e;
+      });
+    });
+  }
+  function openSetup(){
+    var cfg = gh || {};
+    document.getElementById("setupRepo").value = cfg.repo || "";
+    document.getElementById("setupToken").value = "";
+    document.getElementById("setupToken").placeholder = cfg.token ? "Saved — paste a new one to replace it" : "github_pat_…";
+    document.getElementById("setupErr").hidden = true;
+    document.getElementById("setupDisconnect").hidden = backend !== "github";
+    document.getElementById("setupLocal").textContent = backend === "github" ? "Cancel" : "Use this device only";
+    document.getElementById("setupScrim").hidden = false;
+    document.getElementById("setup").hidden = false;
+    document.getElementById(cfg.repo ? "setupToken" : "setupRepo").focus();
+  }
+  function closeSetup(){ document.getElementById("setupScrim").hidden = true; document.getElementById("setup").hidden = true; }
+  function setupError(msg){ var el = document.getElementById("setupErr"); el.textContent = msg; el.hidden = false; }
+  document.getElementById("setupGo").addEventListener("click", function(){
+    var repo = document.getElementById("setupRepo").value.trim().replace(/^https?:\/\/github\.com\//,"").replace(/\.git$/,"").replace(/\/+$/,"");
+    var token = document.getElementById("setupToken").value.trim() || (gh && gh.repo === repo ? gh.token : "");
+    if (!/^[\w.-]+\/[\w.-]+$/.test(repo)) { setupError("Enter the repo as owner/name, e.g. manjo-banjo/waypoint-data."); return; }
+    if (!token) { setupError("Paste the access token."); return; }
+    var cfg = { repo: repo, token: token, path: "waypoint.json" };
+    var btn = this; btn.disabled = true; btn.textContent = "Connecting…";
+    connect(cfg).then(function(file){
+      var carry = [];
+      // Anything kept on this device only is copied into the GitHub file (skipping ids it already has).
+      if (backend === "local" && localDoc) {
+        ["groups","tasks"].forEach(function(col){
+          Object.keys(localDoc[col] || {}).forEach(function(id){
+            if (!(file.doc[col] && file.doc[col][id])) carry.push({ op:"add", col: col, id: id, data: localDoc[col][id] });
+          });
+        });
+      }
+      gh = cfg;
+      try { localStorage.setItem(GH_KEY, JSON.stringify(cfg)); localStorage.removeItem(MODE_KEY); } catch (e) {}
+      backend = "github"; ghBase = file; pending = carry; ghVersion++;
+      closeSetup(); showDoc(currentDoc());
+      if (carry.length) { scheduleFlush(0); toast("Connected — copied " + carry.length + " item" + (carry.length > 1 ? "s" : "") + " from this device"); }
+      else { setSync("ok"); toast("Connected to " + repo); }
+    }, function(e){
+      setupError(e && e.message && !/^GitHub \d/.test(e.message) ? e.message : "Couldn't reach GitHub. Check your connection and try again.");
+    }).finally(function(){ btn.disabled = false; btn.textContent = "Connect"; });
+  });
+  document.getElementById("setupLocal").addEventListener("click", function(){
+    closeSetup();
+    if (backend !== "github") useLocal();
+  });
+  document.getElementById("setupDisconnect").addEventListener("click", function(){
+    if (pending.length && !window.confirm("Some changes haven't reached GitHub yet and will be lost. Disconnect anyway?")) return;
+    try { localStorage.removeItem(GH_KEY); } catch (e) {}
+    gh = null; ghBase = null; pending = [];
+    closeSetup(); useLocal();
+    toast("Disconnected — this device now keeps its own list");
+  });
+  document.getElementById("setupScrim").addEventListener("click", function(){
+    closeSetup(); if (backend === "none") useLocal();
+  });
+  document.getElementById("setup").addEventListener("keydown", function(e){
+    if (e.key === "Enter" && e.target.tagName === "INPUT") document.getElementById("setupGo").click();
+    if (e.key === "Escape") { e.stopPropagation(); closeSetup(); if (backend === "none") useLocal(); }
+  });
+
+  function useLocal(){
+    backend = "local"; loadLocal(); showDoc(localDoc); setSync("local");
+    try { localStorage.setItem(MODE_KEY, "local"); } catch (e) {}
+  }
+  function startDocBackend(){
+    try { gh = JSON.parse(localStorage.getItem(GH_KEY) || "null"); } catch (e) { gh = null; }
+    if (!gh || !gh.repo || !gh.token) {
+      var mode = null; try { mode = localStorage.getItem(MODE_KEY); } catch (e) {}
+      if (mode === "local") useLocal(); else openSetup();
+      return;
+    }
+    gh.path = gh.path || "waypoint.json";
+    backend = "github"; setSync("loading");
+    ghGet(gh).then(function(file){
+      if (!file) throw { status: 404 };
+      ghBase = file; ghVersion++; showDoc(currentDoc()); setSync("ok");
+    }, function(e){ throw e; }).catch(function(e){
+      setSync(e && (e.status === 401 || e.status === 403 || e.status === 404) ? "auth" : "offline");
+      if (syncState === "auth") openSetup();
+      else setTimeout(poll, 5000);
+    });
+  }
+
   // ---------- boot ----------
   function useCap(name){
     try {
@@ -1375,7 +1686,8 @@
   Promise.all([useCap("db"), useCap("sample")]).then(function(res){
     db = res[0]; sample = res[1];
     if (db) {
-      var syncLost = function(){ document.getElementById("syncBadge").hidden = false; };
+      backend = "claude";
+      var syncLost = function(){ setSync("lost"); };
       db.collection("groups").onSnapshot(function(snap){
         rawGroups = snap.docs.map(function(d){ return { id: d.id, data: d.data() }; });
         normalize(); render();
@@ -1385,7 +1697,7 @@
         normalize(); render();
       }, syncLost);
     } else {
-      document.getElementById("syncBadge").hidden = false;
+      startDocBackend();
     }
     setChatVisible(!!(db && sample));
   });
@@ -1403,3 +1715,5 @@
   render();
 })();
 </script>
+</body>
+</html>
