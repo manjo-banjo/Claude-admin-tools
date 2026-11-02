@@ -36,6 +36,12 @@ or disconnect later.
     device — not while you tick things off. Pin a row (pin icon on its header)
     to keep it at the top. Click a row's name to collapse it to a strip of
     per-day counts. Pins and collapsed rows are remembered per device.
+  - Columns size themselves to their content: busy days get wide, empty days
+    narrow (today is never squeezed). Drag a column header's right edge to set
+    a width yourself; double-click the edge to go back to automatic. Click a
+    column header (a day, Backlog or Later) to collapse it to a thin strip with
+    its open-task count. "Reset columns" (top-left corner) undoes both. Remembered
+    per device.
   - On phones the grid becomes a scrolling agenda (Backlog and overdue first,
     then each day, then Later).
 - **List view** — every task grouped by category, sorted by date (lists in the same order as the week rows).
