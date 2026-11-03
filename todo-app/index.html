@@ -1900,9 +1900,13 @@
     if (k.gc) return h.querySelector('.gcard[data-group="' + cssq(k.gc) + '"]');
     return null;
   }
+  // Only put focus back when the redraw actually lost it (the focused element was replaced).
+  // Never pull it away from something focused on purpose during the render, like the rename box.
   function restoreFocus(k){
+    var a = document.activeElement;
+    if (a && a !== document.body && document.body.contains(a)) return;
     var el = elOfKey(k);
-    if (el && document.activeElement !== el) el.focus({ preventScroll: true });
+    if (el) el.focus({ preventScroll: true });
   }
   function focusEl(el){
     if (!el) return;
