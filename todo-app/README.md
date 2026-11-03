@@ -76,8 +76,13 @@ or disconnect later.
   week label to jump to any week.
 - **Moving tasks** — drag between cells on desktop, or tap a task to change
   category, day, importance and notes.
+- **Three statuses** — open, **done** (✓, crossed out) and **skipped** (✕, crossed
+  out and greyed: "not doing it"). Press `s`, Shift/Alt+click the circle, pick it
+  in the task editor, or use Skip in the selection bar; clicking a done or skipped
+  task's circle reopens it. Done and skipped both sink to the bottom.
 - **Progress** — week progress bar, per-day done/total, done today, day streak,
-  backlog size.
+  backlog size. Bars show done in blue and skipped in grey stripes, but the
+  percentage (and done today / streak) counts only tasks actually done.
 - **Theme** — button in the header cycles Auto (follows the device) → Light → Dark;
   remembered per browser.
 - **Keyboard and clipboard** (press `?` in the app for the full list):
@@ -116,8 +121,10 @@ or disconnect later.
         "step": 1793455422000,       // order within the group (lower = earlier), or null
         "order": 1793455422000,      // optional: your manual position in a cell/list (lower = higher up)
         "done": false,
+        "skipped": false,            // true = won't do (crossed out, not counted as done)
         "createdAt": "2026-11-02T09:00:00.000Z",
-        "completedAt": null          // ISO time when ticked off
+        "completedAt": null,         // ISO time when ticked off
+        "skippedAt": null            // ISO time when skipped
       }
     },
     "groups": {
