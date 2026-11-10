@@ -45,6 +45,8 @@ or disconnect later.
   - On phones the grid becomes a scrolling agenda (Backlog and overdue first,
     then each day, then Later).
 - **List view** — every task grouped by category (lists in the same order as the week rows).
+  Shows what's left plus what you finished today; tasks finished earlier fold into
+  "Show N finished earlier" at the bottom of each list.
 - **Your own order** — in week cells and the List view, drag a task up or down
   (a blue line shows where it lands; dropping into another cell moves it to that
   exact spot) or press Alt+↑ / Alt+↓. Ticked tasks stay at the bottom; tasks you
@@ -68,7 +70,7 @@ or disconnect later.
     the group's usual category unless you also give `#category`.
   - important: `!`
   - dates: `today`, `tomorrow`, `fri`, `next fri`, `next week`, `next month`,
-    `in 3 days|weeks|months`, `5 dec`, `dec 5th`, `5/12` (day/month),
+    `this fri`, `this weekend`, `next weekend`, `in 3 days|weeks|months`, `5 dec`, `dec 5th`, `5/12` (day/month),
     `31/01/2027`, `the 15th`, `2026-12-05`
   A preview under the box shows where the task will land before you add it.
 - **Calendar picker** — a month calendar (with dots on days that already have
@@ -98,8 +100,7 @@ or disconnect later.
   - `n` add a task · `1 2 3` Week / List / Groups · `t` this week · `[ ]` previous / next week
 - **Updating with Claude** — ask Claude (in a session with the data repo
   attached) to add, move or complete tasks; it edits `waypoint.json` and the
-  app picks the change up within ~30 seconds. (The in-app 💬 chat button only
-  appears when the page runs as a Claude artifact.)
+  app picks the change up within ~30 seconds.
 
 ## How it's built
 
@@ -140,12 +141,12 @@ or disconnect later.
   file every 30 seconds and when you return to the tab, so changes made on
   another device or by Claude appear on their own. If the file changed since
   the app last read it, the app fetches the latest version and re-applies its
-  own edits on top, so nothing is lost.
+  own edits on top, so nothing is lost. Edits not yet saved are also kept in the
+  browser, so closing the tab or losing signal doesn't lose them: they're sent the
+  next time the app is open and online. The last data read is cached too, so the app
+  opens instantly (and works offline) while it checks GitHub.
 - **Status pill** next to the title: Synced / Saving… / Offline — retrying /
   GitHub access lost — reconnect / This device only.
-- **Inside a Claude artifact** the same file instead uses the artifact's
-  built-in database and shows the 💬 chat button; that copy keeps its own,
-  separate data.
 
 ## Editing the app
 
