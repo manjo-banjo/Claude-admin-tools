@@ -132,13 +132,13 @@
   .colhead.is-today .dow, .colhead.is-today .daynum{ color:var(--hl); }
   .mini{ display:flex; align-items:center; gap:6px; font-size:.68rem; color:var(--ink-faint); }
   .mini .bar{ flex:1; height:4px; border:none; }
-  .backlog-head .title{ font-family:"Fraunces", Georgia, serif; font-size:1.25rem; font-weight:500; line-height:1.1; }
+  .backlog-head .title, .later-head .title{ font-family:"Fraunces", Georgia, serif; font-size:1.25rem; font-weight:500; line-height:1.1; }
   .rowhead{ padding:8px 26px 8px 6px; display:flex; flex-direction:column; gap:4px; position:sticky; }
   .rowtoggle{ display:flex; align-items:center; gap:6px; border:none; background:none; padding:2px 2px; margin:0; font-weight:600; font-size:.86rem; color:var(--ink); cursor:pointer; text-align:left; border-radius:6px; }
   .rowtoggle:hover{ background:var(--surface-2); }
   .rowtoggle .chev{ display:inline-block; width:10px; font-size:.7rem; color:var(--ink-faint); transition:transform .15s; }
   .rowhead.collapsed .rowtoggle .chev{ transform:rotate(-90deg); }
-  .rowhead .sub{ font-size:.68rem; color:var(--ink-faint); padding-left:20px; line-height:1.4; }
+  .rowhead .sub{ font-size:.7rem; color:var(--ink-faint); padding-left:20px; line-height:1.4; }
   .pinbtn{ position:absolute; top:7px; right:4px; width:22px; height:22px; display:grid; place-items:center; border:none; background:none; border-radius:6px; color:var(--ink-faint); cursor:pointer; opacity:0; transition:opacity .15s; padding:0; }
   .pinbtn svg{ width:13px; height:13px; }
   .rowhead:hover .pinbtn, .pinbtn:focus-visible, .pinbtn.on{ opacity:1; }
@@ -153,8 +153,6 @@
   .ccount .hi{ color:var(--warn); font-weight:700; }
   .datetag{ display:inline-block; font-size:.68rem; color:var(--ink-dim); margin-left:6px; font-weight:500; white-space:nowrap; }
   .datetag.overdue{ color:var(--warn); font-weight:600; }
-  .later-head .title{ font-family:"Fraunces", Georgia, serif; font-size:1.25rem; font-weight:500; line-height:1.1; }
-  .rowhead .sub{ font-size:.7rem; color:var(--ink-faint); }
   .dot{ width:9px; height:9px; border-radius:50%; background:var(--c); flex:none; }
 
   .cell{ min-height:96px; padding:6px; display:flex; flex-direction:column; gap:5px; transition:background .15s; }
@@ -198,6 +196,8 @@
   .listview{ display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:12px; align-items:start; }
   .lv-group{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:6px; }
   .lv-group h3{ margin:0 0 4px; font-size:.9rem; display:flex; align-items:center; gap:7px; }
+  .lv-more{ align-self:flex-start; border:none; background:none; color:var(--ink-faint); font-size:.74rem; padding:3px 4px; border-radius:6px; cursor:pointer; }
+  .lv-more:hover{ color:var(--accent); background:var(--accent-soft); }
   .lv-group.drop{ outline:2px dashed var(--accent); outline-offset:-3px; }
 
   /* Group label on chips + @ suggestions */
@@ -339,21 +339,6 @@
   .cal-day.is-sel.has-tasks::after{ background:var(--accent-ink); }
   .cal-foot{ display:flex; gap:6px; flex-wrap:wrap; justify-content:space-between; }
 
-  /* Chat */
-  .chat-toggle{ position:fixed; right:18px; bottom:18px; width:52px; height:52px; border-radius:50%; background:var(--accent); color:var(--accent-ink); border:none; box-shadow:var(--shadow); font-size:1.3rem; cursor:pointer; z-index:20; }
-  .chat-panel{ position:fixed; right:16px; bottom:80px; width:min(360px, calc(100vw - 32px)); max-height:min(500px, calc(100vh - 120px)); background:var(--surface); border:1px solid var(--line-strong); border-radius:16px; box-shadow:var(--shadow); display:flex; flex-direction:column; z-index:20; overflow:hidden; }
-  .chat-header{ display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid var(--line); font-weight:600; font-size:.9rem; }
-  .chat-header button{ background:none; border:none; color:var(--ink-dim); font-size:1rem; cursor:pointer; }
-  .chat-log{ flex:1; overflow-y:auto; padding:12px 14px; display:flex; flex-direction:column; gap:10px; }
-  .chat-msg{ font-size:.85rem; line-height:1.4; max-width:88%; padding:8px 11px; border-radius:10px; overflow-wrap:anywhere; }
-  .chat-msg.user{ align-self:flex-end; background:var(--accent-soft); border-bottom-right-radius:2px; }
-  .chat-msg.assistant{ align-self:flex-start; background:var(--surface-2); border-bottom-left-radius:2px; }
-  .chat-hint{ font-size:.78rem; color:var(--ink-faint); padding:0 14px 8px; margin:0; }
-  .chat-form{ display:flex; gap:8px; padding:10px 12px; border-top:1px solid var(--line); }
-  .chat-form input{ flex:1; border:1px solid var(--line); background:var(--bg); border-radius:8px; padding:8px 10px; font-size:.85rem; min-width:0; }
-  .chat-form button{ background:var(--accent); color:var(--accent-ink); border:none; border-radius:8px; padding:8px 14px; font-size:.82rem; font-weight:600; cursor:pointer; flex:none; }
-  .chat-form button:disabled{ opacity:.6; cursor:default; }
-
   .toast{ position:fixed; left:50%; bottom:84px; transform:translateX(-50%); max-width:calc(100vw - 32px); background:var(--ink); color:var(--bg); font-size:.84rem; padding:9px 14px; border-radius:10px; z-index:40; box-shadow:var(--shadow); }
   @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
 </style>
@@ -488,19 +473,6 @@
   </div>
 </div>
 
-<button id="chatToggle" class="chat-toggle" hidden aria-label="Ask Claude to update your planner">💬</button>
-<div id="chatPanel" class="chat-panel" hidden>
-  <div class="chat-header">
-    <span>Ask Claude</span>
-    <button id="chatClose" aria-label="Close chat">✕</button>
-  </div>
-  <div class="chat-log" id="chatLog"></div>
-  <p class="chat-hint">Try: "move dentist to Friday" or "plan switching gas provider: switch name, meter change, new tariff, then move provider"</p>
-  <form class="chat-form" id="chatForm">
-    <input type="text" id="chatInput" placeholder="Tell it what to change…" maxlength="500" autocomplete="off" aria-label="Message">
-    <button type="submit" id="chatSend">Send</button>
-  </form>
-</div>
 <div class="toast" id="toast" role="status" hidden></div>
 <div class="selbar" id="selbar" role="region" aria-label="Selection" hidden>
   <span id="selText"></span>
@@ -510,7 +482,7 @@
 <div class="help" id="help" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
   <h2 id="helpTitle">Keyboard shortcuts</h2>
   <table id="helpTable"></table>
-  <p>Shortcuts don't fire while you're typing in a box. Undo covers adds, moves, ticks and deletes from this session.</p>
+  <p>Shortcuts don't fire while you're typing in a box. Undo covers adds, moves, ticks, edits and deletes from this session.</p>
   <div><button type="button" class="btn primary" id="helpClose">Close</button></div>
 </div>
 
@@ -559,8 +531,7 @@
   var rawGroups = [];    // groups: [{id, data}]
   var tasks = [];        // normalized view of raw
   var groups = [];       // normalized view of rawGroups
-  var GROUP = {};
-  var db = null, sample = null, localId = 0;
+  var GROUP = {}, TASK = {}, RAW = {};
   var weekStart = THIS_MON;
   var view = "week";
   var openId = null;
@@ -588,14 +559,17 @@
         step: typeof x.step === "number" ? x.step : null,
         order: typeof x.order === "number" ? x.order : null,
         createdAt: String(x.createdAt || ""),
-        completedAt: x.completedAt || null
+        completedAt: x.completedAt || null,
+        skippedAt: x.skippedAt || null
       };
       t.closed = t.done || t.skipped;   // done or skipped: no longer on your plate
       t.doneOn = t.done && t.completedAt ? iso(new Date(t.completedAt)) : null;
       return t;
     });
+    TASK = {}; tasks.forEach(function(t){ TASK[t.id] = t; });
+    RAW = {}; raw.forEach(function(r){ RAW[r.id] = r.data; });
   }
-  function find(id){ return tasks.filter(function(t){ return t.id === id; })[0]; }
+  function find(id){ return Object.prototype.hasOwnProperty.call(TASK, id) ? TASK[id] : undefined; }
 
   // Steps within a group sort by `step`; a strictly increasing value puts new steps last.
   var lastStep = 0;
@@ -625,7 +599,7 @@
     if (m) return Promise.resolve(m.id);
     var name = groupNameFromToken(token), key = normName(name);
     if (pendingGroups[key]) return pendingGroups[key];
-    var p = write("add", null, { name: name, createdAt: new Date().toISOString() }, false, "groups").then(function(ref){ return ref.id; });
+    var p = write("add", null, { name: name, createdAt: new Date().toISOString() }, "groups").then(function(ref){ return ref.id; });
     pendingGroups[key] = p;
     p.then(function(){ setTimeout(function(){ delete pendingGroups[key]; }, 8000); }, function(){ delete pendingGroups[key]; });
     return p;
@@ -647,9 +621,12 @@
     var m;
     if (s === "today" || s === "tonight") return TODAY;
     if (s === "tomorrow" || s === "tmrw" || s === "tmr") return addDays(TODAY,1);
+    if (s === "weekend" || s === "this weekend") s = "sat";
+    if ((m = s.match(/^this (\w+)$/)) && DAYWORDS.hasOwnProperty(m[1])) s = m[1];
     if (DAYWORDS.hasOwnProperty(s)) { var diff = DAYWORDS[s]-TI; if (diff < 0) diff += 7; return addDays(TODAY,diff); }
     if ((m = s.match(/^next (\w+)$/))) {
       if (m[1] === "week") return addDays(THIS_MON,7);
+      if (m[1] === "weekend") return addDays(THIS_MON,12);
       if (m[1] === "month") return addMonths(TODAY,1);
       if (DAYWORDS.hasOwnProperty(m[1])) return addDays(THIS_MON, 7+DAYWORDS[m[1]]);
       return null;
@@ -723,27 +700,8 @@
   }
 
   // ---------- store ----------
-  function write(op, id, data, quiet, colName){
-    colName = colName || "tasks";
-    if (backend === "github" || backend === "local") return docWrite(op, id, data, colName);
-    if (db) {
-      var col = db.collection(colName);
-      var p = op === "add" ? col.add(data) : op === "set" ? col.doc(id).set(data) : op === "update" ? col.doc(id).update(data) : col.doc(id).delete();
-      return p.catch(function(e){
-        if (!quiet) toast(e && e.code === "quota_exceeded" ? "The list is full — delete some old tasks, then try again." : "That didn't save — check your connection and try again.");
-        throw e;
-      });
-    }
-    var arr = colName === "groups" ? rawGroups : raw;
-    if (op === "add" || op === "set") { var nid = op === "set" ? id : "local-"+(++localId); arr.push({ id: nid, data: data }); normalize(); render(); return Promise.resolve({ id: nid }); }
-    var r = arr.filter(function(x){ return x.id === id; })[0];
-    if (!r) return Promise.reject({ code:"not_found", message:"Nothing with that id." });
-    if (op === "update") r.data = Object.assign({}, r.data, data);
-    else if (colName === "groups") rawGroups = rawGroups.filter(function(x){ return x.id !== id; });
-    else raw = raw.filter(function(x){ return x.id !== id; });
-    normalize(); render();
-    return Promise.resolve();
-  }
+  // Every change goes through here: col is "tasks" (default) or "groups".
+  function write(op, id, data, col){ return docWrite(op, id, data, col || "tasks"); }
   function newTaskData(p){
     return { title: p.title, tab: p.cat, priority: p.priority || "med", due: p.date || "", notes: p.notes || "",
              group: p.group || "", step: p.group ? nextStep() : null,
@@ -902,7 +860,7 @@
       if (colCollapsed(c.key)) { parts.push("38px"); min += 38; }
       else if (colPrefs.widths[c.key]) { parts.push(colPrefs.widths[c.key] + "px"); min += colPrefs.widths[c.key]; }
       else {
-        var lo = c.edge ? 130 : 78;
+        var lo = c.edge ? 130 : c.n ? 124 : 78;   // a day with tasks never gets so thin that words break apart
         parts.push("minmax(" + lo + "px," + c.weight.toFixed(2) + "fr)"); min += lo;
       }
     });
@@ -925,6 +883,7 @@
     gridCols.forEach(function(c){
       // Size by the tasks you'd actually see (rows not collapsed); today never gets squeezed.
       var n = colTasks[c.key].filter(function(t){ return shownCats.indexOf(t.cat) !== -1; }).length;
+      c.n = n;
       c.weight = c.edge ? 0.8 + 0.25 * Math.min(n, 8) : 0.6 + 0.3 * Math.min(n, 7);
       if (c.date === TODAY_ISO) c.weight = Math.max(c.weight, 1.1);
       c.open = colTasks[c.key].filter(function(t){ return !t.closed; }).length;
@@ -1040,15 +999,32 @@
     document.getElementById("agenda").innerHTML = h;
   }
 
+  // Tasks finished (done or skipped) before today fold into "Show N finished earlier", so a list shows what's left
+  // plus what you ticked off today. The Week view still shows everything.
+  var listShowOld = {};
+  function finishedLongAgo(t, cutoff){ var at = t.done ? t.completedAt : t.skippedAt; return t.closed && (!at || at < cutoff); }
   function renderList(){
+    var cutoff = TODAY.toISOString();
     document.getElementById("listGroups").innerHTML = orderedCats().map(function(c){
-      var list = sortTasks(tasks.filter(function(t){ return t.cat === c.id; }));
-      return '<div class="lv-group" tabindex="-1" data-cat="'+c.id+'"><h3><span class="dot" style="--c:var(--cat-'+c.id+')"></span>'+c.label+' <span class="num nudge">'+list.filter(function(t){ return t.done; }).length+'/'+list.length+'</span></h3>' +
-        (list.length ? treeHtml(taskTree(list), false, function(t){ return !!t.date; }) : '<span class="nudge">Nothing here</span>') + pasteBtn() + '</div>';
+      var all = tasks.filter(function(t){ return t.cat === c.id; });
+      var old = all.filter(function(t){ return finishedLongAgo(t, cutoff); }).length;
+      var list = sortTasks(listShowOld[c.id] ? all : all.filter(function(t){ return !finishedLongAgo(t, cutoff); }));
+      return '<div class="lv-group" tabindex="-1" data-cat="'+c.id+'"><h3><span class="dot" style="--c:var(--cat-'+c.id+')"></span>'+c.label+' <span class="num nudge">'+all.filter(function(t){ return t.done; }).length+'/'+all.length+'</span></h3>' +
+        (list.length ? treeHtml(taskTree(list), false, function(t){ return !!t.date; }) : '<span class="nudge">Nothing open</span>') +
+        (old ? '<button type="button" class="lv-more" data-lvold="'+c.id+'">'+(listShowOld[c.id] ? "Hide older finished" : "Show "+old+" finished earlier")+'</button>' : '') +
+        pasteBtn() + '</div>';
     }).join("");
   }
+  document.getElementById("listGroups").addEventListener("click", function(e){
+    var b = e.target.closest("[data-lvold]"); if (!b) return;
+    listShowOld[b.dataset.lvold] = !listShowOld[b.dataset.lvold]; render();
+  });
 
+  // While you type in a cell's "+ Add" box, redraws (e.g. a sync from another device) wait until you finish,
+  // so the box isn't wiped and half-typed text isn't saved. Finishing always redraws.
+  var inlineEdit = null;
   function render(){
+    if (inlineEdit && document.body.contains(inlineEdit)) return;
     var fk = focusKey();
     selected = selected.filter(function(id){ return !!find(id); });
     if (clip) { clip.ids = clip.ids.filter(function(id){ return !!find(id); }); if (!clip.ids.length) clip = null; }
@@ -1061,7 +1037,10 @@
     document.getElementById("viewWeek").setAttribute("aria-pressed", view === "week");
     document.getElementById("viewList").setAttribute("aria-pressed", view === "list");
     document.getElementById("viewGroups").setAttribute("aria-pressed", view === "groups");
-    if (view === "week") { renderGrid(); renderAgenda(); }
+    if (view === "week") {
+      // Draw only the layout this screen shows (grid on wide screens, agenda on phones) and empty the other.
+      if (PHONE.matches) { renderAgenda(); document.getElementById("grid").innerHTML = ""; } else { renderGrid(); document.getElementById("agenda").innerHTML = ""; }
+    }
     else if (view === "list") renderList();
     else renderGroups();
     updateSuggest();
@@ -1070,6 +1049,9 @@
     renderSelbar();
     restoreFocus(fk);
   }
+
+  var PHONE = window.matchMedia ? matchMedia("(max-width:760px)") : { matches: false };
+  if (PHONE.addEventListener) PHONE.addEventListener("change", function(){ render(); });
 
   // ---------- actions ----------
   var toastTimer;
@@ -1096,7 +1078,7 @@
 
   // Undo: each entry knows how to reverse one user action (adds, moves, ticks, deletes, pastes).
   var undoStack = [];
-  function rawOf(id){ var r = raw.filter(function(x){ return x.id === id; })[0]; return r ? JSON.parse(JSON.stringify(r.data)) : null; }
+  function rawOf(id){ var d = RAW[id]; return d ? JSON.parse(JSON.stringify(d)) : null; }
   function pushUndo(label, fn){ undoStack.push({ label: label, fn: fn }); if (undoStack.length > 40) undoStack.shift(); }
   function undo(){
     var u = undoStack.pop();
@@ -1149,13 +1131,13 @@
       var dates = weekDates();
       var left = tasks.filter(function(x){ return x.date && dates.indexOf(x.date) !== -1 && !x.closed; }).length;
       toast(left ? "Nice — "+left+" left this week" : "That's the week cleared");
-    }, function(){});
+    }, noop);
   }
   function move(id, cat, date){
     var t = find(id);
     updateTasks([{ id: id, patch: { tab: cat, due: date || "" } }], "move \u201c"+(t ? t.title.slice(0,40) : "task")+"\u201d").then(function(){
       toast("Moved to "+placeLabel({ cat: cat, date: date, priority: "med" }));
-    }, function(){});
+    }, noop);
   }
 
   // Quick add
@@ -1205,9 +1187,10 @@
       input.className = "cell-input"; input.type = "text"; input.maxLength = 160;
       input.placeholder = "New task…"; input.setAttribute("aria-label", "New task");
       act.replaceWith(input); input.focus();
+      inlineEdit = input;
       var committed = false;
       var commit = function(){
-        if (committed) return; committed = true;
+        if (committed) return; committed = true; inlineEdit = null;
         var isLater = c.dataset.date === "later";
         var p = parse(input.value, { cat: c.dataset.cat, date: isLater ? null : (c.dataset.date || null) });
         if (p.groupToken && !p.catExplicit) p.catExplicit = true; // the cell's row is the category
@@ -1217,7 +1200,7 @@
       };
       input.addEventListener("keydown", function(ev){
         if (ev.key === "Enter") { ev.preventDefault(); commit(); }
-        if (ev.key === "Escape") { committed = true; render(); }
+        if (ev.key === "Escape") { committed = true; inlineEdit = null; render(); }
       });
       input.addEventListener("blur", commit);
     }
@@ -1448,36 +1431,36 @@
     if (i < 0 || j < 0 || j >= steps.length) return;
     var a = steps[i], b = steps[j];
     if (a.step !== null && b.step !== null && a.step !== b.step) {
-      write("update", a.id, { step: b.step }).catch(function(){});
-      write("update", b.id, { step: a.step }).catch(function(){});
+      write("update", a.id, { step: b.step }).catch(noop);
+      write("update", b.id, { step: a.step }).catch(noop);
       return;
     }
     // Missing or tied step numbers: renumber the whole group in the new order.
     var order = steps.slice(); order[i] = b; order[j] = a;
     var base = nextStep();
     lastStep = base + order.length;
-    order.forEach(function(x,k){ write("update", x.id, { step: base + k }).catch(function(){}); });
+    order.forEach(function(x,k){ write("update", x.id, { step: base + k }).catch(noop); });
   }
   function createGroup(name){
     name = name.trim(); if (!name) return;
     var existing = groups.filter(function(g){ return normName(g.name) === normName(name); })[0];
     if (existing) { pendingFocus = "gadd-"+existing.id; render(); toast("That group already exists"); return; }
-    write("add", null, { name: name, createdAt: new Date().toISOString() }, false, "groups").then(function(ref){
+    write("add", null, { name: name, createdAt: new Date().toISOString() }, "groups").then(function(ref){
       pendingFocus = "gadd-"+ref.id; render();
-    }, function(){});
+    }, noop);
   }
   function saveRename(gid, value){
     renamingId = null;
     var g = GROUP[gid]; var v = (value || "").trim();
-    if (g && v && v !== g.name) write("update", gid, { name: v }, false, "groups").catch(function(){});
+    if (g && v && v !== g.name) write("update", gid, { name: v }, "groups").catch(noop);
     render();
   }
   function deleteGroup(gid){
     var members = tasks.filter(function(t){ return t.group === gid; });
-    write("delete", gid, null, false, "groups").then(function(){
-      members.forEach(function(t){ write("update", t.id, { group: "", step: null }, true).catch(function(){}); });
+    write("delete", gid, null, "groups").then(function(){
+      members.forEach(function(t){ write("update", t.id, { group: "", step: null }).catch(noop); });
       toast("Group deleted — its steps are still in your planner");
-    }, function(){});
+    }, noop);
   }
 
   var groupsHost = document.getElementById("groupsHost");
@@ -1546,7 +1529,7 @@
       var n = document.getElementById("sheetNotes").value.slice(0,500);
       if (v && v !== t.title) patch.title = v;
       if (n !== t.notes) patch.notes = n;
-      if (Object.keys(patch).length) write("update", t.id, patch).catch(function(){});
+      if (Object.keys(patch).length) updateTasks([{ id: t.id, patch: patch }], "edit \u201c"+t.title.slice(0,40)+"\u201d").catch(noop);
     }
     hideSheet(); render();
   }
@@ -1554,8 +1537,9 @@
     var t = find(openId);
     if (!t) { hideSheet(); return; }
     var ti = document.getElementById("sheetTitle"), nt = document.getElementById("sheetNotes");
-    if (fresh || document.activeElement !== ti) ti.value = t.title;
-    if (fresh || document.activeElement !== nt) nt.value = t.notes;
+    // Title and notes are filled once when the editor opens, so clicking a category or day
+    // while you're mid-sentence doesn't wipe what you typed. They save when you close it.
+    if (fresh) { ti.value = t.title; nt.value = t.notes; }
     document.getElementById("sheetImp").checked = t.priority === "high";
     var st = t.done ? "done" : t.skipped ? "skipped" : "open";
     document.getElementById("sheetStatus").innerHTML = [["open","Open"],["done","✓ Done"],["skipped","✕ Skipped"]].map(function(o){
@@ -1586,7 +1570,7 @@
   }
   function setTaskGroup(id, gid){
     var t = find(id); if (!t || (t.group || null) === (gid || null)) return;
-    write("update", id, { group: gid || "", step: gid ? nextStep() : null }).catch(function(){});
+    updateTasks([{ id: id, patch: { group: gid || "", step: gid ? nextStep() : null } }], "change group").catch(noop);
   }
   document.getElementById("sheetGroup").addEventListener("change", function(e){
     var ng = document.getElementById("sheetNewGroup");
@@ -1601,7 +1585,7 @@
     var name = e.target.value.trim(), id = openId;
     if (!name) return;
     e.target.value = ""; e.target.hidden = true;
-    resolveGroup(name, true).then(function(gid){ setTaskGroup(id, gid); }, function(){});
+    resolveGroup(name, true).then(function(gid){ setTaskGroup(id, gid); }, noop);
   });
   document.getElementById("sheetCats").addEventListener("click", function(e){
     var b = e.target.closest("button"); if (!b) return;
@@ -1626,7 +1610,7 @@
     if (b.dataset.status !== cur) setStatus([t.id], b.dataset.status).catch(noop);
   });
   document.getElementById("sheetImp").addEventListener("change", function(e){
-    var t = find(openId); if (t) write("update", t.id, { priority: e.target.checked ? "high" : "med" }).catch(function(){});
+    var t = find(openId); if (t) updateTasks([{ id: t.id, patch: { priority: e.target.checked ? "high" : "med" } }], "change importance").catch(noop);
   });
   document.getElementById("sheetDelete").addEventListener("click", function(){
     var id = openId; hideSheet(); render();
@@ -2123,177 +2107,31 @@
   document.getElementById("viewList").addEventListener("click", function(){ setView("list"); });
   document.getElementById("viewGroups").addEventListener("click", function(){ setView("groups"); });
 
-  // ---------- chat ----------
-  var chatHistory = [], chatBusy = false;
-  function appendChatMsg(role, text){
-    var log = document.getElementById("chatLog");
-    var div = document.createElement("div");
-    div.className = "chat-msg "+role; div.textContent = text;
-    log.appendChild(div); log.scrollTop = log.scrollHeight;
-    return div;
-  }
-  function chatContextTasks(){
-    var open = tasks.filter(function(t){ return !t.closed; });
-    var recentDone = tasks.filter(function(t){ return t.closed; })
-      .sort(function(a,b){ return (b.completedAt||"") < (a.completedAt||"") ? -1 : 1; }).slice(0,20);
-    return open.concat(recentDone).slice(0,150).map(function(t){
-      return t.id+" · "+t.cat+" · "+(t.date || "backlog")+" · ["+(t.done?"x":t.skipped?"~":" ")+"] "+t.title.slice(0,80)+(t.priority==="high"?" (important)":"")+(t.group?" · @"+GROUP[t.group].name:"");
-    }).join("\n");
-  }
-  function buildInstructions(){
-    return 'You are the assistant inside "Waypoint", a personal weekly planner. Each task has a category ' +
-      '(work, social, health, admin, general) and an optional date; tasks without a date sit in the Backlog. ' +
-      'Use the tools to add, complete, reopen, edit, move or delete tasks — never just describe a change without making it. ' +
-      'Resolve relative dates yourself ("friday", "next week", "in a month", "5 Dec") to YYYY-MM-DD; dates are day/month when written with slashes. ' +
-      'New tasks default to category general with no date unless the user says otherwise. ' +
-      'If a request is ambiguous, choose the most reasonable match from the list rather than asking. ' +
-      'Tasks can also belong to a group: a free-form, long-running project (e.g. "Switch gas provider") whose steps are done in order. ' +
-      'When the user describes something with several steps, add each step to the same group in the order given (call add_task once per step, in order). ' +
-      'Use an existing group name exactly as listed when adding to it. ' +
-      'After acting, reply with one short, friendly sentence saying what changed — no lists.\n\n' +
-      "Today is " + TODAY.toLocaleDateString("en-GB", { weekday:"long" }) + " " + TODAY_ISO + ".\n\n" +
-      "Groups (name · done/total):\n" + (groups.map(function(g){ var st = groupStats(g); return g.name+" · "+st.done+"/"+st.total; }).join("\n") || "(none yet)") + "\n\n" +
-      "Tasks (id · category · date · done · title · @group):\n" + (chatContextTasks() || "(none yet)");
-  }
-  function validDate(v){ return typeof v === "string" && (v === "" || /^\d{4}-\d{2}-\d{2}$/.test(v)); }
-  var CHAT_TOOLS = [
-    {
-      name: "add_task",
-      description: "Add a new task. Returns the new task's id.",
-      inputSchema: { type:"object", properties:{
-        title:{ type:"string" }, category:{ type:"string", enum: CAT_IDS },
-        due:{ type:"string", description:"YYYY-MM-DD, or empty for the Backlog" },
-        important:{ type:"boolean" }, notes:{ type:"string" },
-        group:{ type:"string", description:"Group to add this task to as its next step. An existing group's exact name, or a new name to create the group. Omit for no group." }
-      }, required:["title"] },
-      execute: function(input){
-        var title = String(input.title || "").trim().slice(0,160);
-        if (!title) throw new Error("A title is required.");
-        var p = { title: title, cat: CAT[input.category] ? input.category : "general",
-                  date: validDate(input.due) && input.due ? input.due : null,
-                  priority: input.important ? "high" : "med", notes: String(input.notes || "").slice(0,500) };
-        var gname = typeof input.group === "string" ? input.group.trim().slice(0,80) : "";
-        return resolveGroup(gname, true).then(function(gid){
-          p.group = gid;
-          return write("add", null, newTaskData(p), true);
-        }).then(function(ref){ return { id: ref.id, placed: placeLabel(p) }; });
-      }
-    },
-    {
-      name: "complete_task",
-      description: "Mark a task done, by id.",
-      inputSchema: { type:"object", properties:{ id:{ type:"string" } }, required:["id"] },
-      execute: function(input){
-        var id = String(input.id);
-        return write("update", id, { done:true, completedAt: new Date().toISOString() }, true).then(function(){ return { id:id, done:true }; });
-      }
-    },
-    {
-      name: "reopen_task",
-      description: "Mark a completed task as not done again, by id.",
-      inputSchema: { type:"object", properties:{ id:{ type:"string" } }, required:["id"] },
-      execute: function(input){
-        var id = String(input.id);
-        return write("update", id, { done:false, skipped:false, completedAt:null, skippedAt:null }, true).then(function(){ return { id:id, done:false }; });
-      }
-    },
-    {
-      name: "update_task",
-      description: "Edit or move a task by id: title, category, due date (YYYY-MM-DD, or empty string to move it to the Backlog), important flag or notes. Omit fields that stay the same.",
-      inputSchema: { type:"object", properties:{
-        id:{ type:"string" }, title:{ type:"string" }, category:{ type:"string", enum: CAT_IDS },
-        due:{ type:"string" }, important:{ type:"boolean" }, notes:{ type:"string" },
-        group:{ type:"string", description:"Move the task into this group (exact existing name, or a new name to create it); empty string removes it from its group." }
-      }, required:["id"] },
-      execute: function(input){
-        var id = String(input.id), patch = {};
-        if (typeof input.title === "string" && input.title.trim()) patch.title = input.title.trim().slice(0,160);
-        if (CAT[input.category]) patch.tab = input.category;
-        if (validDate(input.due)) patch.due = input.due;
-        if (typeof input.important === "boolean") patch.priority = input.important ? "high" : "med";
-        if (typeof input.notes === "string") patch.notes = input.notes.slice(0,500);
-        var gname = typeof input.group === "string" ? input.group.trim().slice(0,80) : null;
-        var gp = gname === null ? Promise.resolve(undefined) : resolveGroup(gname, true);
-        return gp.then(function(gid){
-          if (gid !== undefined) { patch.group = gid || ""; patch.step = gid ? nextStep() : null; }
-          if (!Object.keys(patch).length) return { id:id, updated:false };
-          return write("update", id, patch, true).then(function(){ return { id:id, updated:true }; });
-        });
-      }
-    },
-    {
-      name: "delete_task",
-      description: "Permanently remove a task, by id.",
-      inputSchema: { type:"object", properties:{ id:{ type:"string" } }, required:["id"] },
-      execute: function(input){
-        var id = String(input.id);
-        return write("delete", id, null, true).then(function(){ return { id:id, deleted:true }; });
-      }
-    }
-  ];
-  function chatErrorCopy(code){
-    switch (code) {
-      case "rate_limited": return "That's a lot of requests — give it a minute and try again.";
-      case "not_granted": return "Chat isn't allowed for this page, so it's switched off.";
-      case "session_expired": return "Sign in to Claude again to keep chatting.";
-      case "refused": return "Claude declined that one — try rephrasing it.";
-      case "empty_completion": return "No reply came back — try a shorter, more specific message.";
-      case "prompt_too_large": return "Your list is too long to send in one go — try a more specific request.";
-      default: return "That didn't go through — try again in a moment.";
-    }
-  }
-  var HIDE_CHAT_CODES = ["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed","tools_unavailable"];
-  function setChatVisible(v){
-    document.getElementById("chatToggle").hidden = !v;
-    if (!v) document.getElementById("chatPanel").hidden = true;
-  }
-  document.getElementById("chatToggle").addEventListener("click", function(){
-    var panel = document.getElementById("chatPanel");
-    panel.hidden = !panel.hidden;
-    if (!panel.hidden) document.getElementById("chatInput").focus();
-  });
-  document.getElementById("chatClose").addEventListener("click", function(){ document.getElementById("chatPanel").hidden = true; });
-  document.getElementById("chatForm").addEventListener("submit", function(e){
-    e.preventDefault();
-    if (chatBusy || !sample) return;
-    var input = document.getElementById("chatInput");
-    var msg = input.value.trim(); if (!msg) return;
-    input.value = "";
-    appendChatMsg("user", msg);
-    var turns = [{ role:"user", content: buildInstructions() }].concat(chatHistory).concat([{ role:"user", content: msg }]);
-    chatBusy = true;
-    var sendBtn = document.getElementById("chatSend");
-    sendBtn.disabled = true; sendBtn.textContent = "…";
-    var bubble = appendChatMsg("assistant", "Thinking…");
-    sample(turns, {
-      modelTier: "default",
-      signal: new AbortController().signal,
-      tools: CHAT_TOOLS,
-      onText: function(u){ bubble.textContent = u.text; }
-    }).then(function(result){
-      chatHistory.push({ role:"user", content: msg }, { role:"assistant", content: result.text });
-      if (chatHistory.length > 16) chatHistory = chatHistory.slice(-16);
-    }).catch(function(err){
-      var code = err && err.code;
-      bubble.textContent = code === "cancelled" ? (err.text || "Stopped.") : (err && err.text) ? err.text : chatErrorCopy(code);
-      if (HIDE_CHAT_CODES.indexOf(code) !== -1) setChatVisible(false);
-    }).finally(function(){
-      chatBusy = false; sendBtn.disabled = false; sendBtn.textContent = "Send";
-    });
-  });
-
   // ---------- document storage: a JSON file in a private GitHub repo, or this browser ----------
   // Outside a Claude artifact, all data is one document:
   //   { format: "waypoint/1", updatedAt, tasks: { <id>: {...} }, groups: { <id>: {...} } }
   // Edits apply locally at once and are queued; the queue is committed to GitHub shortly after.
   // If the file changed elsewhere (another device, or Claude editing it), the queue is replayed on top.
-  var backend = "none";                       // "claude" | "github" | "local"
+  var backend = "none";                       // "github" | "local" ("none" until set up)
   var GH_KEY = "waypoint.github", LOCAL_KEY = "waypoint.local", MODE_KEY = "waypoint.mode";
   var gh = null;                              // { repo: "owner/name", token, path }
   var ghBase = null;                          // { doc, sha } last known file on GitHub
   var pending = [];                           // queued ops: { op, col, id, data }
   var flushing = false, flushTimer = null, ghVersion = 0, conflicts = 0;
   var localDoc = null;
+  // Unsent edits and the last file read are also kept in this browser, so closing the tab (or losing signal)
+  // never loses an edit, and the app opens instantly with your last data while it checks GitHub.
+  var PENDING_KEY = "waypoint.pending", CACHE_KEY = "waypoint.cache";
+  function savePending(){
+    try { if (gh && pending.length) localStorage.setItem(PENDING_KEY, JSON.stringify({ repo: gh.repo, ops: pending })); else localStorage.removeItem(PENDING_KEY); } catch (e) {}
+  }
+  function setBase(file){
+    ghBase = file; ghVersion++;
+    try { if (gh && file) localStorage.setItem(CACHE_KEY, JSON.stringify({ repo: gh.repo, doc: file.doc, sha: file.sha })); } catch (e) {}
+  }
+  function readStored(key){
+    try { var v = JSON.parse(localStorage.getItem(key) || "null"); return v && gh && v.repo === gh.repo ? v : null; } catch (e) { return null; }
+  }
 
   function emptyDoc(){ return { format: "waypoint/1", tasks: {}, groups: {} }; }
   function applyOps(base, ops){
@@ -2320,7 +2158,7 @@
     var cur = currentDoc();
     if (op !== "add" && op !== "set" && !(cur[col] && cur[col][id])) return Promise.reject({ code:"not_found", message:"Nothing with that id." });
     var o = { op: op, col: col, id: op === "add" ? newId() : id, data: data };
-    if (backend === "github") { pending.push(o); showDoc(currentDoc()); scheduleFlush(); }
+    if (backend === "github") { pending.push(o); savePending(); showDoc(currentDoc()); scheduleFlush(); }
     else { localDoc = applyOps(localDoc, [o]); saveLocal(); showDoc(localDoc); }
     return Promise.resolve({ id: o.id });
   }
@@ -2341,14 +2179,14 @@
     var map = {
       ok: ["Synced", ""], saving: ["Saving…", "busy"], loading: ["Loading…", "busy"],
       offline: ["Offline — retrying", "warn"], auth: ["GitHub access lost — reconnect", "warn"],
-      local: ["This device only", ""], lost: ["Not saving — reload the page", "warn"]
+      local: ["This device only", ""]
     };
     var m = map[state];
-    el.hidden = !m || backend === "claude" && state !== "lost";
+    el.hidden = !m;
     if (m) { el.textContent = m[0]; el.className = "sync-pill" + (m[1] ? " " + m[1] : ""); }
     el.title = backend === "github" && gh ? "Saved to " + gh.repo + "/" + gh.path : "";
   }
-  document.getElementById("syncPill").addEventListener("click", function(){ if (backend !== "claude") openSetup(); });
+  document.getElementById("syncPill").addEventListener("click", openSetup);
 
   // --- GitHub contents API ---
   function b64encode(str){
@@ -2409,8 +2247,8 @@
     var doc = applyOps(ghBase ? ghBase.doc : emptyDoc(), batch);
     doc.format = "waypoint/1"; doc.updatedAt = new Date().toISOString();
     ghPut(gh, doc, ghBase && ghBase.sha, commitMessage(batch)).then(function(sha){
-      ghBase = { doc: doc, sha: sha }; ghVersion++; conflicts = 0;
-      pending = pending.slice(batch.length);
+      setBase({ doc: doc, sha: sha }); conflicts = 0;
+      pending = pending.slice(batch.length); savePending();
       flushing = false;
       if (pending.length) scheduleFlush(); else setSync("ok");
     }, function(e){
@@ -2419,7 +2257,8 @@
         // The file changed since we last read it: fetch the latest and replay our queued edits on top.
         conflicts++;
         ghGet(gh).then(function(latest){
-          ghBase = latest; ghVersion++; showDoc(currentDoc()); scheduleFlush(300);
+          if (latest) setBase(latest);
+          showDoc(currentDoc()); scheduleFlush(300);
         }, flushFailed);
         return;
       }
@@ -2437,8 +2276,8 @@
     var v = ghVersion;
     ghGet(gh).then(function(latest){
       if (v !== ghVersion || flushing || !latest) return;     // a save landed meanwhile; next poll catches up
-      if (!ghBase || latest.sha !== ghBase.sha) { ghBase = latest; rowOrderStale = true; showDoc(currentDoc()); }
-      if (!pending.length) setSync("ok");
+      if (!ghBase || latest.sha !== ghBase.sha) { setBase(latest); rowOrderStale = true; showDoc(currentDoc()); }
+      if (pending.length) scheduleFlush(0); else setSync("ok");
     }, function(e){ setSync(e.status === 401 || e.status === 403 ? "auth" : "offline"); });
   }
   setInterval(poll, 30000);
@@ -2497,7 +2336,7 @@
       }
       gh = cfg;
       try { localStorage.setItem(GH_KEY, JSON.stringify(cfg)); localStorage.removeItem(MODE_KEY); } catch (e) {}
-      backend = "github"; ghBase = file; pending = carry; ghVersion++;
+      backend = "github"; pending = carry; setBase(file); savePending();
       closeSetup(); showDoc(currentDoc());
       if (carry.length) { scheduleFlush(0); toast("Connected — copied " + carry.length + " item" + (carry.length > 1 ? "s" : "") + " from this device"); }
       else { setSync("ok"); toast("Connected to " + repo); }
@@ -2511,7 +2350,7 @@
   });
   document.getElementById("setupDisconnect").addEventListener("click", function(){
     if (pending.length && !window.confirm("Some changes haven't reached GitHub yet and will be lost. Disconnect anyway?")) return;
-    try { localStorage.removeItem(GH_KEY); } catch (e) {}
+    try { [GH_KEY, PENDING_KEY, CACHE_KEY].forEach(function(k){ localStorage.removeItem(k); }); } catch (e) {}
     gh = null; ghBase = null; pending = [];
     closeSetup(); useLocal();
     toast("Disconnected — this device now keeps its own list");
@@ -2537,10 +2376,15 @@
     }
     gh.path = gh.path || "waypoint.json";
     backend = "github"; setSync("loading");
+    var cached = readStored(CACHE_KEY), saved = readStored(PENDING_KEY);
+    if (saved && Array.isArray(saved.ops)) pending = saved.ops;
+    if (cached) { ghBase = { doc: cached.doc, sha: cached.sha }; showDoc(currentDoc()); }
+    var v0 = ghVersion;
     ghGet(gh).then(function(file){
       if (!file) throw { status: 404 };
-      ghBase = file; ghVersion++; showDoc(currentDoc()); setSync("ok");
-    }, function(e){ throw e; }).catch(function(e){
+      if (ghVersion === v0) { setBase(file); showDoc(currentDoc()); }   // else a save already landed something newer
+      if (pending.length) scheduleFlush(0); else setSync("ok");
+    }).catch(function(e){
       setSync(e && (e.status === 401 || e.status === 403 || e.status === 404) ? "auth" : "offline");
       if (syncState === "auth") openSetup();
       else setTimeout(poll, 5000);
@@ -2548,40 +2392,18 @@
   }
 
   // ---------- boot ----------
-  function useCap(name){
-    try {
-      if (!window.claude || typeof window.claude.use !== "function") return Promise.resolve(null);
-      return window.claude.use(name);
-    } catch (e) { return Promise.resolve(null); }
-  }
-  Promise.all([useCap("db"), useCap("sample")]).then(function(res){
-    db = res[0]; sample = res[1];
-    if (db) {
-      backend = "claude";
-      var syncLost = function(){ setSync("lost"); };
-      db.collection("groups").onSnapshot(function(snap){
-        rawGroups = snap.docs.map(function(d){ return { id: d.id, data: d.data() }; });
-        normalize(); render();
-      }, syncLost);
-      db.collection("tasks").onSnapshot(function(snap){
-        if (!raw.length) rowOrderStale = true;
-        raw = snap.docs.map(function(d){ return { id: d.id, data: d.data() }; });
-        normalize(); render();
-      }, syncLost);
-    } else {
-      startDocBackend();
-    }
-    setChatVisible(!!(db && sample));
-  });
+  startDocBackend();
 
-  // Roll over to the new day if the page stays open past midnight.
-  setInterval(function(){
+  // Roll over to the new day if the page stays open past midnight (or you come back to it the next day).
+  function rollDay(){
     if (iso(sod(new Date())) === TODAY_ISO) return;
     var onThisWeek = iso(weekStart) === iso(THIS_MON);
     setToday();
     if (onThisWeek) weekStart = THIS_MON;
-    render();
-  }, 60000);
+    rowOrderStale = true; render();
+  }
+  setInterval(rollDay, 60000);
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) rollDay(); });
 
   updatePreview();
   render();
